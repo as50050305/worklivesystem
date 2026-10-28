@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
+import { useId, type InputHTMLAttributes, type Ref, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { cn } from '@/lib/cn'
 
 export interface FieldProps {
@@ -46,11 +46,11 @@ export function Input({ label, help, error, wrapperClassName, className, ...rest
   )
 }
 
-export function Textarea({ label, help, error, wrapperClassName, className, ...rest }: Common & TextareaHTMLAttributes<HTMLTextAreaElement>) {
+export function Textarea({ label, help, error, wrapperClassName, className, ref, ...rest }: Common & TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: Ref<HTMLTextAreaElement> }) {
   return (
     <Field label={label} help={help} error={error} className={wrapperClassName}>
       {(id, desc, invalid) => (
-        <textarea id={id} aria-describedby={desc} aria-invalid={invalid || undefined} className={cn('input', className)} {...rest} />
+        <textarea ref={ref} id={id} aria-describedby={desc} aria-invalid={invalid || undefined} className={cn('input', className)} {...rest} />
       )}
     </Field>
   )

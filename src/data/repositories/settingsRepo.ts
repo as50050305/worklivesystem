@@ -22,6 +22,14 @@ export const settingsRepo = {
     if (error) throw error
   },
 
+  /** 合併寫入 preferences（只覆寫傳入的鍵） */
+  async mergePreferences(patch: Record<string, unknown>): Promise<void> {
+    const cur = await settingsRepo.get()
+    const preferences = { ...(cur?.preferences ?? {}), ...patch }
+    const { error } = await getSupabase().from('app_settings').update({ preferences }).eq('user_id', OWNER_ID)
+    if (error) throw error
+  },
+
   /** 每日檢查宣告：今天第一次呼叫的裝置回傳 true（P2／P5 使用） */
   async claimDailyCheck(today: string): Promise<boolean> {
     const { data, error } = await getSupabase().rpc('claim_daily_check', { p_today: today })

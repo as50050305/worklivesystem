@@ -1,6 +1,7 @@
 import { CloudOff, Menu, Moon, OctagonAlert, RefreshCw, Search, Sun, X } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { runDailyCheck } from '@/automation/dailyCheck'
+import '@/automation/tasks'
 import { useAppState } from '@/app/AppStateProvider'
 import { useRealtimeSync } from '@/data/hooks'
 import { onMutationError } from '@/data/queryClient'

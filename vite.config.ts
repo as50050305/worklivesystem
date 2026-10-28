@@ -25,6 +25,8 @@ export default defineConfig({
           groups: [
             { name: 'vendor-react', test: /node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/ },
             { name: 'vendor-supabase', test: /node_modules[\\/]@supabase[\\/]/ },
+            // PDF 相關套件只在下載 PDF 時才載入（不能被下面的 vendor 收進主程式）
+            { name: 'vendor-pdf', test: /node_modules[\\/](pdf-lib|@pdf-lib|pako|harfbuzzjs|unicode-properties|unicode-trie|tiny-inflate|dfa|brotli|restructure)[\\/]/, priority: 10 },
             { name: 'vendor', test: /node_modules[\\/]/ },
           ],
         },
@@ -59,9 +61,21 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+        // PDF 套件約 1 MB，不預先快取；第一次下載 PDF 時才抓並放進 pdf-assets 快取
+        globIgnores: ['**/vendor-pdf-*.js'],
         navigateFallback: '/index.html',
         cleanupOutdatedCaches: true,
         runtimeCaching: [
+          {
+            // PDF 用的中文字型（約 7 MB）與字型處理元件：第一次產生 PDF 時下載，之後離線也能用
+            urlPattern: ({ url }) => url.pathname.startsWith('/fonts/') || url.pathname.endsWith('.wasm') || /\/vendor-pdf-[^/]+\.js$/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'pdf-assets',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
           {
             // 字型檔（含中文分片）首次使用時才快取，避免預快取過大
             urlPattern: ({ url }) => url.pathname.endsWith('.woff2'),

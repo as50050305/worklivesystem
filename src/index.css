@@ -545,3 +545,14 @@
 .leaflet-control-attribution a {
   color: var(--c-text-2) !important;
 }
+
+/* ---------- 合約預覽：不論深淺色主題都用列印紙張的樣子 ---------- */
+.paper {
+  background: #fbfaf5;
+  color: #1e2321;
+  font-family: var(--ff-cjk);
+  background-image: linear-gradient(to right, rgb(19 115 90 / 0.08) 1px, transparent 1px);
+  background-size: 100% 100%;
+  background-position: 36px 0;
+  background-repeat: no-repeat;
+}

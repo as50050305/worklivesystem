@@ -1,10 +1,14 @@
 import { ExternalLink, FileText, Paperclip, Plus, Trash2, Upload } from 'lucide-react'
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Alert, Badge, Button, Card, ConfirmDialog, Countdown, ProgressRing, Spinner, Switch } from '@/components/ui'
 import { stagesOf, useOptionSet, useProjectAttachments, useProjectCosts, useProjectLinks, useProjectMutations, useStageTemplates } from '@/data/projectHooks'
 import { projectsRepo } from '@/data/repositories/projectsRepo'
+import { useClients } from '@/data/clientHooks'
+import { useQuotes } from '@/data/quoteHooks'
 import type { Attachment, Project, ProjectCost } from '@/data/types'
+import { QuoteCreateDialog } from '@/features/quotes/QuoteCreateDialog'
+import { quoteNumber } from '@/lib/quotes'
 import { formatMoney, progressFromStage, sumByCurrency } from '@/lib/projects'
 import { useToday } from '@/lib/useToday'
 import { useOnline } from '@/pwa/useOnline'
@@ -339,30 +343,75 @@ export function AttachmentsCard({ project }: { project: Project }) {
 
 /* ---------------- 關聯 ---------------- */
 export function RelationsCard({ project }: { project: Project }) {
-  const rows: [string, ReactNode][] = [
-    [
-      '來源收藏',
-      project.source_collection_id ? (
-        <Link to={`/collections?edit=${project.source_collection_id}`} className="inline-flex items-center gap-1 underline decoration-dotted underline-offset-4">
-          查看收藏 <ExternalLink size={12} />
-        </Link>
-      ) : (
-        <span className="text-text-3">—</span>
-      ),
-    ],
-    ['客戶', project.client_id ? <span className="font-mono text-xs">{project.client_id.slice(0, 8)}</span> : <Badge tone="lavender">P5</Badge>],
-    ['報價單', project.quote_id ? <span className="font-mono text-xs">{project.quote_id.slice(0, 8)}</span> : <Badge tone="lavender">P6</Badge>],
-  ]
+  const online = useOnline()
+  const m = useProjectMutations()
+  const clients = useClients()
+  const quotes = useQuotes()
+  const statuses = useOptionSet('quote_status')
+  const [creating, setCreating] = useState(false)
+  const client = clients.data?.find((c) => c.id === project.client_id) ?? null
+  const related = (quotes.data ?? []).filter((q) => q.project_id === project.id || q.id === project.quote_id)
+  const codeOf = (clientId: string | null) => clients.data?.find((c) => c.id === clientId) ?? null
   return (
     <Card title="關聯">
-      <dl className="space-y-2 text-sm">
-        {rows.map(([label, value]) => (
-          <div key={label} className="flex items-center justify-between gap-3">
-            <dt className="text-text-2">{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
+      <dl className="space-y-3 text-sm">
+        <div className="flex items-center justify-between gap-3">
+          <dt className="text-text-2">來源收藏</dt>
+          <dd>
+            {project.source_collection_id ? (
+              <Link to={`/collections?edit=${project.source_collection_id}`} className="inline-flex items-center gap-1 underline decoration-dotted underline-offset-4">
+                查看收藏 <ExternalLink size={12} />
+              </Link>
+            ) : (
+              <span className="text-text-3">—</span>
+            )}
+          </dd>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <dt className="text-text-2">客戶</dt>
+          <dd className="flex min-w-0 items-center gap-2">
+            {client && (
+              <Link to={`/clients/${client.id}`} aria-label={`前往客戶 ${client.name}`} className="text-text-2 hover:text-text">
+                <ExternalLink size={13} />
+              </Link>
+            )}
+            <select className="input h-8 w-auto max-w-44 px-2 text-sm" aria-label="專案客戶" value={project.client_id ?? ''} disabled={!online} onChange={(e) => m.update.mutate({ id: project.id, patch: { client_id: e.target.value || null } })}>
+              <option value="">（無）</option>
+              {(clients.data ?? []).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.code} {c.name}
+                </option>
+              ))}
+            </select>
+          </dd>
+        </div>
+        <div>
+          <dt className="mb-1 flex items-center justify-between text-text-2">
+            報價單
+            <Button size="sm" variant="ghost" icon={<Plus size={13} />} disabled={!online} onClick={() => setCreating(true)}>
+              新增報價單
+            </Button>
+          </dt>
+          <dd>
+            {!related.length ? (
+              <span className="text-text-3">—</span>
+            ) : (
+              <ul className="space-y-1">
+                {related.map((q) => (
+                  <li key={q.id}>
+                    <Link to={`/quotes/${q.id}`} className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-surface-2">
+                      <FileText size={13} className="text-text-2" />
+                      <span className="tabular flex-1 font-mono text-xs">{quoteNumber(codeOf(q.client_id)?.code, q.version)}</span>
+                      <Badge tone={statuses.byId(q.status_id)?.key === 'won' ? 'primary' : 'neutral'}>{statuses.byId(q.status_id)?.label ?? '—'}</Badge>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </dd>
+        </div>
       </dl>
+      {creating && <QuoteCreateDialog clientId={project.client_id ?? undefined} projectId={project.id} onClose={() => setCreating(false)} />}
     </Card>
   )
 }

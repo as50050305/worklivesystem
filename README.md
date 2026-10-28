@@ -3,7 +3,7 @@
 單人使用的 PWA 網頁 App：專案、時間軸、收藏庫、客戶追蹤、報價單、人脈。
 React + TypeScript + Vite + Tailwind CSS，資料放在 Supabase，部署到 Vercel。
 
-> 目前進度：**P4（收藏庫與轉換）**
+> 目前進度：**P6（報價單、品項庫、合約 PDF、成交同步）**
 >
 > ⚠️ **免登入模式**：依需求不使用登入。任何知道網址的人都能讀取與修改資料，請勿公開分享網址，並定期備份（見[安全說明](#安全說明免登入模式)）。
 
@@ -37,6 +37,8 @@ React + TypeScript + Vite + Tailwind CSS，資料放在 Supabase，部署到 Ver
 │  ├─ features/timeline/          時間軸元件（項目卡片、編輯抽屜、日／週／月檢視）
 │  ├─ features/projects/          專案元件（看板、地圖、詳情各區塊）
 │  ├─ features/collections/       收藏庫（編輯抽屜、轉為專案／客戶）
+│  ├─ features/clients/           客戶（看板、追蹤面板、會議、關聯人脈）
+│  ├─ features/contacts/          人脈編輯
 │  ├─ features/settings/          設定頁（選項表、階段模板）
 │  ├─ pwa/                        Service Worker 更新提示、離線偵測、安裝提示
 │  ├─ layout/                     App 外框、側邊欄、導覽

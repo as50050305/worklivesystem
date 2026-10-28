@@ -7,6 +7,7 @@ import { BoxIllustration } from '@/components/illustrations/Illustrations'
 import { useColorTagMutations, useColorTags } from '@/data/hooks'
 import type { ColorTag } from '@/data/types'
 import { appVersion } from '@/lib/env'
+import { ContractsSection } from '@/features/settings/ContractsSection'
 import { OptionsSection } from '@/features/settings/OptionsSection'
 import { TemplatesSection } from '@/features/settings/TemplatesSection'
 import { useTheme } from '@/lib/ThemeContext'
@@ -19,7 +20,7 @@ const TABS: { value: Tab; label: string; phase?: string }[] = [
   { value: 'appearance', label: '外觀' },
   { value: 'options', label: '選項表' },
   { value: 'templates', label: '階段模板' },
-  { value: 'contracts', label: '合約模板', phase: 'P6' },
+  { value: 'contracts', label: '報價與合約' },
   { value: 'backup', label: '匯出／匯入', phase: 'P7' },
   { value: 'security', label: '安全與版本' },
 ]
@@ -202,6 +203,7 @@ export function SettingsPage() {
         {tab === 'appearance' && <AppearanceSection />}
         {tab === 'options' && <OptionsSection />}
         {tab === 'templates' && <TemplatesSection />}
+        {tab === 'contracts' && <ContractsSection />}
         {tab === 'security' && <SecuritySection />}
         {meta.phase && (
           <Card>

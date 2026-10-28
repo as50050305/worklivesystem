@@ -128,13 +128,13 @@ export function HomePage() {
 
         <Card title="開發進度">
           <div className="flex justify-center py-2">
-            <ProgressRing value={(4 / 7) * 100} size={220} label="P4 ／ 7" sublabel="收藏庫完成" />
+            <ProgressRing value={(6 / 7) * 100} size={220} label="P6 ／ 7" sublabel="報價與合約完成" />
           </div>
           <ol className="mt-4">
             {PHASES.map(([p, desc], i) => (
               <li key={p} className="flex items-center gap-3 border-b border-dashed border-line-soft py-2 text-sm last:border-0">
-                <Badge tone={i <= 3 ? 'primary' : 'neutral'}>{p}</Badge>
-                <span className={i <= 3 ? 'text-text' : 'text-text-2'}>{desc}</span>
+                <Badge tone={i <= 5 ? 'primary' : 'neutral'}>{p}</Badge>
+                <span className={i <= 5 ? 'text-text' : 'text-text-2'}>{desc}</span>
               </li>
             ))}
           </ol>

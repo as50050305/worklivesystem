@@ -240,10 +240,179 @@ export interface Collection {
 
 export type CollectionInput = Partial<Omit<Collection, 'id' | 'user_id' | 'created_at' | 'updated_at'>> & { name: string }
 
-/** P4 只用到建立；完整欄位於 P5 */
 export interface ClientRow {
   id: string
   code: string
   name: string
   website: string | null
+}
+
+export interface Client {
+  id: string
+  user_id: string
+  code: string
+  name: string
+  phone: string | null
+  email: string | null
+  instagram: string | null
+  website: string | null
+  sales_stage_id: string | null
+  cooperation_status_id: string | null
+  followup_status_id: string | null
+  followup_count: number
+  round: number
+  round_started_on: string | null
+  next_followup_on: string | null
+  cooldown_until: string | null
+  has_worked_together: boolean
+  decline_next: boolean
+  no_show_pending: boolean
+  color_tag_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type ClientInput = Partial<Omit<Client, 'id' | 'user_id' | 'created_at' | 'updated_at'>>
+
+export interface ClientFollowup {
+  id: string
+  client_id: string
+  followed_on: string
+  method_id: string | null
+  note: string | null
+  round: number | null
+  created_at: string
+}
+
+export interface ClientMeeting {
+  id: string
+  client_id: string
+  starts_at: string
+  note: string | null
+  created_at: string
+}
+
+export interface ClientNote {
+  id: string
+  client_id: string
+  content: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Contact {
+  id: string
+  user_id: string
+  name: string
+  phone: string | null
+  email: string | null
+  company: string | null
+  job_title: string | null
+  website: string | null
+  instagram: string | null
+  source_id: string | null
+  referrer_contact_id: string | null
+  referrer_name: string | null
+  relation_id: string | null
+  client_id: string | null
+  note: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type ContactInput = Partial<Omit<Contact, 'id' | 'user_id' | 'created_at' | 'updated_at'>> & { name: string }
+
+export interface ClientContactLink {
+  id: string
+  client_id: string
+  contact_id: string
+}
+
+/* ---------------- P6：報價單、品項庫、合約 ---------------- */
+
+export interface Quote {
+  id: string
+  user_id: string
+  client_id: string | null
+  project_id: string | null
+  /** 同一客戶＋專案自動遞增（新增時留空由資料庫產生） */
+  version: number
+  copied_from_id: string | null
+  issued_on: string
+  title: string | null
+  currency: string
+  license_scope: string | null
+  revision_count: number | null
+  delivery_terms: string | null
+  deposit_percent: number | null
+  tax_percent: number
+  total: number
+  total_is_manual: boolean
+  status_id: string | null
+  note: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type QuoteInput = Partial<Omit<Quote, 'id' | 'user_id' | 'version' | 'created_at' | 'updated_at'>>
+
+export interface QuoteLine {
+  id: string
+  quote_id: string
+  item_name: string
+  quantity: number
+  unit_price: number
+  subtotal: number
+  subtotal_is_manual: boolean
+  sort_order: number
+  created_at: string
+}
+
+export type QuoteLineInput = Partial<Pick<QuoteLine, 'item_name' | 'quantity' | 'unit_price' | 'subtotal' | 'subtotal_is_manual' | 'sort_order'>>
+
+export interface QuoteItem {
+  id: string
+  name: string
+  unit_price: number
+  note: string | null
+  sort_order: number
+  created_at: string
+}
+
+export interface ContractTemplate {
+  id: string
+  name: string
+  body: string
+  is_default: boolean
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export interface Contract {
+  id: string
+  quote_id: string | null
+  template_id: string | null
+  title: string
+  body: string
+  created_at: string
+  updated_at: string
+}
+
+/** 報價方資料與報價預設值（存在 app_settings.preferences.business） */
+export interface BusinessProfile {
+  name: string
+  email: string
+  phone: string
+  address: string
+  /** 匯款資訊（多行） */
+  bank: string
+  default_currency: string
+  default_tax_percent: number
+  default_deposit_percent: number
+  default_revision_count: number | null
+  default_license_scope: string
+  default_delivery_terms: string
+  /** 報價單備註（例如有效期限） */
+  default_note: string
 }

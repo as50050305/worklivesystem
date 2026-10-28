@@ -5,10 +5,15 @@ import { Spinner } from '@/components/ui'
 import { AppShell, PublicFrame } from '@/layout/AppShell'
 import { NAV_ITEMS } from '@/layout/nav'
 import { HomePage } from '@/pages/HomePage'
+import { ClientDetailPage } from '@/pages/ClientDetailPage'
+import { ClientsPage } from '@/pages/ClientsPage'
 import { CollectionsPage } from '@/pages/CollectionsPage'
+import { ContactsPage } from '@/pages/ContactsPage'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 import { ProjectDetailPage } from '@/pages/ProjectDetailPage'
 import { ProjectsPage } from '@/pages/ProjectsPage'
+import { QuoteEditorPage } from '@/pages/QuoteEditorPage'
+import { QuotesPage } from '@/pages/QuotesPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { SetupPage } from '@/pages/SetupPage'
 import { TimelinePage } from '@/pages/TimelinePage'
@@ -68,6 +73,30 @@ export function App() {
           }
         />
         <Route
+          path="/clients"
+          element={
+            <RequireSetup>
+              <ClientsPage />
+            </RequireSetup>
+          }
+        />
+        <Route
+          path="/clients/:id"
+          element={
+            <RequireSetup>
+              <ClientDetailPage />
+            </RequireSetup>
+          }
+        />
+        <Route
+          path="/contacts"
+          element={
+            <RequireSetup>
+              <ContactsPage />
+            </RequireSetup>
+          }
+        />
+        <Route
           path="/collections"
           element={
             <RequireSetup>
@@ -88,6 +117,22 @@ export function App() {
           element={
             <RequireSetup>
               <ProjectDetailPage />
+            </RequireSetup>
+          }
+        />
+        <Route
+          path="/quotes"
+          element={
+            <RequireSetup>
+              <QuotesPage />
+            </RequireSetup>
+          }
+        />
+        <Route
+          path="/quotes/:id"
+          element={
+            <RequireSetup>
+              <QuoteEditorPage />
             </RequireSetup>
           }
         />

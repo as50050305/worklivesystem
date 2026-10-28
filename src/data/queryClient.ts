@@ -47,8 +47,18 @@ export const TABLE_KEYS: Record<string, string[][]> = {
   stage_templates: [['templates'], ['projects']],
   template_tasks: [['templates']],
   collections: [['collections'], ['sidebar']],
-  clients: [['clients']],
+  clients: [['clients'], ['sidebar']],
+  client_followups: [['clients']],
+  client_meetings: [['clients']],
+  client_notes: [['clients']],
+  client_contacts: [['clients'], ['contacts']],
+  contacts: [['contacts'], ['clients']],
   app_settings: [['settings']],
+  quotes: [['quotes'], ['clients'], ['projects']],
+  quote_lines: [['quotes']],
+  quote_item_library: [['quote_items']],
+  contract_templates: [['contract_templates']],
+  contracts: [['contracts']],
 }
 
 export function invalidateTable(table: string): void {

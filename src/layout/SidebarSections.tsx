@@ -3,13 +3,17 @@ import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge, EmptyState, Spinner } from '@/components/ui'
 import { LampIllustration } from '@/components/illustrations/Illustrations'
+import { useClientActions, useClients } from '@/data/clientHooks'
+import { keyOf } from '@/data/clientRules'
 import { useCollectionMutations, useCollections } from '@/data/collectionHooks'
+import { useOptions } from '@/data/projectHooks'
 import { useActiveProjectsForCountdown, useChecklist, useColorTags, useSidebarTimeline, useTimelineMutations } from '@/data/hooks'
 import type { ChecklistItem } from '@/data/types'
 import { ItemCard } from '@/features/timeline/ItemCard'
 import { cn } from '@/lib/cn'
 import { diffDays, formatDate } from '@/lib/dates'
 import { isReminderDue } from '@/lib/collections'
+import { isDueToday } from '@/lib/followup'
 import { lifeTodos, nearestCountdowns, todaySchedule } from '@/lib/sidebar'
 import { useToday } from '@/lib/useToday'
 import { useOnline } from '@/pwa/useOnline'
@@ -107,6 +111,16 @@ export function SidebarSections() {
   const online = useOnline()
   const collectionsQ = useCollections()
   const colM = useCollectionMutations()
+  const clientsQ = useClients()
+  const { data: options = [] } = useOptions()
+  const clientActions = useClientActions()
+  const clients = clientsQ.data ?? []
+  const fkey = (id: string | null) => keyOf(options, id)
+  const dueClients = clients
+    .filter((c) => isDueToday({ followup_status: fkey(c.followup_status_id) as never, next_followup_on: c.next_followup_on }, today))
+    .sort((a, b) => ((a.next_followup_on ?? '') < (b.next_followup_on ?? '') ? -1 : 1))
+  const recontact = clients.filter((c) => fkey(c.followup_status_id) === 'recontact')
+  const noShow = clients.filter((c) => c.no_show_pending)
   const reminders = (collectionsQ.data ?? []).filter((c) => isReminderDue(c, today)).sort((a, b) => ((a.remind_on ?? '') < (b.remind_on ?? '') ? -1 : 1))
 
   const quickAdd = (title: string, tagId: string | null | undefined) =>
@@ -154,8 +168,58 @@ export function SidebarSections() {
         )}
       </Section>
 
-      <Section id="clients" title="待追蹤客戶" phase="P5">
-        <p className="text-sm text-text-3">今日待追蹤、可重新聯絡、No show 寄信提示</p>
+      <Section id="clients" title="待追蹤客戶" count={dueClients.length + recontact.length + noShow.length}>
+        {dueClients.length + recontact.length + noShow.length === 0 ? (
+          <p className="text-sm text-text-3">今天沒有要追蹤的客戶</p>
+        ) : (
+          <ul className="space-y-1.5">
+            {noShow.map((c) => (
+              <li key={`ns-${c.id}`} className="flex items-center gap-2 rounded-xl border border-dashed border-warning px-3 py-2">
+                <Link to={`/clients/${c.id}`} className="min-w-0 flex-1">
+                  <span className="block truncate text-sm hover:underline">
+                    <span className="tabular mr-1 font-mono text-[11px] text-text-2">{c.code}</span>
+                    {c.name}
+                  </span>
+                  <span className="block text-[11px] font-semibold text-warning">No show：寄追蹤信</span>
+                </Link>
+                <button type="button" disabled={!online} onClick={() => void clientActions.clearNoShow(c)} className="flex-none rounded-lg px-2 py-1 text-[11px] text-text-2 hover:bg-surface-2 hover:text-text" aria-label={`已寄出 ${c.name} 的追蹤信`}>
+                  已寄出
+                </button>
+              </li>
+            ))}
+            {dueClients.map((c) => {
+              const late = diffDays(c.next_followup_on!, today)
+              return (
+                <li key={`due-${c.id}`}>
+                  <Link to={`/clients/${c.id}`} className="flex items-center gap-2 rounded-xl border border-line-soft px-3 py-2 hover:bg-surface-2">
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm">
+                        <span className="tabular mr-1 font-mono text-[11px] text-text-2">{c.code}</span>
+                        {c.name}
+                      </span>
+                      <span className={cn('block text-[11px]', late > 0 ? 'font-semibold text-danger' : 'text-text-2')}>
+                        第 {c.followup_count + 1} 次追蹤{late > 0 ? `・逾期 ${late} 天` : '・今天'}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              )
+            })}
+            {recontact.map((c) => (
+              <li key={`re-${c.id}`}>
+                <Link to={`/clients/${c.id}`} className="flex items-center gap-2 rounded-xl border border-primary-ink/60 px-3 py-2 hover:bg-surface-2">
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm">
+                      <span className="tabular mr-1 font-mono text-[11px] text-text-2">{c.code}</span>
+                      {c.name}
+                    </span>
+                    <span className="block text-[11px] text-primary-ink">可重新聯絡・第 {c.round} 輪</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </Section>
 
       <Section id="life" title="生活代辦" count={life.filter((i) => !i.is_done).length}>
