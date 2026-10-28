@@ -2,7 +2,7 @@ import { ArrowLeft, Copy, Download, FileSignature, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BoxIllustration } from '@/components/illustrations/Illustrations'
-import { Alert, Button, Card, ConfirmDialog, EmptyState, Select, Spinner } from '@/components/ui'
+import { Alert, Button, Card, ConfirmDialog, EmptyState, Select, Spinner, TitleInput } from '@/components/ui'
 import { useClient } from '@/data/clientHooks'
 import { keyOf } from '@/data/clientRules'
 import { useOptions, useOptionSet, useProject } from '@/data/projectHooks'
@@ -11,7 +11,7 @@ import type { Contract, Quote } from '@/data/types'
 import { ContractEditor } from '@/features/quotes/ContractEditor'
 import { ContractsCard, QuoteBasicsCard, QuoteLinesCard, QuoteTermsCard, QuoteTotalsCard, VersionsCard } from '@/features/quotes/editor'
 import { buildQuotePdfData, quoteFileName } from '@/features/quotes/pdfData'
-import { DraftInput, quoteNo } from '@/features/quotes/shared'
+import { quoteNo } from '@/features/quotes/shared'
 import { useToday } from '@/lib/useToday'
 import { useOnline } from '@/pwa/useOnline'
 
@@ -97,13 +97,14 @@ function Editor({ quote }: { quote: Quote }) {
                 </>
               )}
             </p>
-            <DraftInput
+            <TitleInput
               aria-label="報價單標題"
               placeholder="（未命名報價單）"
               value={quote.title ?? ''}
+              allowEmpty
               disabled={!online}
-              className="mt-1 h-auto w-full border-transparent bg-transparent px-0 text-3xl font-medium tracking-tight sm:text-4xl"
-              onCommit={(v) => m.update.mutate({ id: quote.id, patch: { title: v.trim() || null } })}
+              className="mt-1 text-3xl font-medium tracking-tight placeholder:text-text-3 sm:text-4xl"
+              onCommit={(v) => m.update.mutate({ id: quote.id, patch: { title: v || null } })}
             />
           </div>
           <div className="flex flex-wrap items-end gap-2">
@@ -162,12 +163,12 @@ function Editor({ quote }: { quote: Quote }) {
         )}
       </div>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="grid gap-6">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="grid grid-cols-1 gap-6">
           <QuoteLinesCard quote={quote} lines={lines.data ?? []} loading={lines.isLoading} />
           <QuoteTermsCard quote={quote} />
         </div>
-        <div className="grid gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <QuoteTotalsCard quote={quote} lines={lines.data ?? []} />
           <QuoteBasicsCard quote={quote} />
           <ContractsCard quote={quote} onOpen={(c) => setContract({ c })} onDownload={(c) => void downloadContract(c, c.id).catch((e) => setMsg({ tone: 'danger', text: String(e?.message ?? e) }))} downloading={pdfBusy} />

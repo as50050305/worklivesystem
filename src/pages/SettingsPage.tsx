@@ -2,11 +2,11 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { PageHeader } from '@/components/PageHeader'
-import { Alert, Badge, Button, Card, ConfirmDialog, EmptyState, Input, Switch, Tabs } from '@/components/ui'
-import { BoxIllustration } from '@/components/illustrations/Illustrations'
+import { Alert, Badge, Button, Card, ConfirmDialog, Input, Switch, Tabs } from '@/components/ui'
 import { useColorTagMutations, useColorTags } from '@/data/hooks'
 import type { ColorTag } from '@/data/types'
 import { appVersion } from '@/lib/env'
+import { BackupSection } from '@/features/settings/BackupSection'
 import { ContractsSection } from '@/features/settings/ContractsSection'
 import { OptionsSection } from '@/features/settings/OptionsSection'
 import { TemplatesSection } from '@/features/settings/TemplatesSection'
@@ -15,13 +15,13 @@ import { useOnline } from '@/pwa/useOnline'
 
 type Tab = 'tags' | 'appearance' | 'options' | 'templates' | 'contracts' | 'backup' | 'security'
 
-const TABS: { value: Tab; label: string; phase?: string }[] = [
+const TABS: { value: Tab; label: string }[] = [
   { value: 'tags', label: '顏色標籤' },
   { value: 'appearance', label: '外觀' },
   { value: 'options', label: '選項表' },
   { value: 'templates', label: '階段模板' },
   { value: 'contracts', label: '報價與合約' },
-  { value: 'backup', label: '匯出／匯入', phase: 'P7' },
+  { value: 'backup', label: '匯出／匯入' },
   { value: 'security', label: '安全與版本' },
 ]
 
@@ -178,7 +178,7 @@ function SecuritySection() {
       </Alert>
       <ul className="mt-5 list-disc space-y-2 pl-5 text-sm text-text-2">
         <li>不要把網址貼到公開的地方；Vercel 的網址可以改成不容易猜到的名稱。</li>
-        <li>定期使用「匯出／匯入」備份（P7 完成）；Supabase 免費方案也有每日備份。</li>
+        <li>定期到「匯出／匯入」下載備份；Supabase 免費方案也有每日備份。</li>
         <li>資料庫已限制只能存取這個 App 的資料，並禁止一次清空整張表（TRUNCATE）。</li>
         <li>日後想加回保護，可以改回 Email＋密碼登入，或在 Vercel／Cloudflare 前面加一道網站密碼，資料不需要搬移。</li>
       </ul>
@@ -193,7 +193,6 @@ function SecuritySection() {
 export function SettingsPage() {
   const [params, setParams] = useSearchParams()
   const tab = (TABS.some((t) => t.value === params.get('tab')) ? params.get('tab') : 'tags') as Tab
-  const meta = TABS.find((t) => t.value === tab)!
   return (
     <>
       <PageHeader title="設定" eyebrow="Settings" />
@@ -204,12 +203,8 @@ export function SettingsPage() {
         {tab === 'options' && <OptionsSection />}
         {tab === 'templates' && <TemplatesSection />}
         {tab === 'contracts' && <ContractsSection />}
+        {tab === 'backup' && <BackupSection />}
         {tab === 'security' && <SecuritySection />}
-        {meta.phase && (
-          <Card>
-            <EmptyState illustration={<BoxIllustration />} title={`${meta.label}將在 ${meta.phase} 完成`} />
-          </Card>
-        )}
       </div>
     </>
   )

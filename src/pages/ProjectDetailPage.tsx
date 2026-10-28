@@ -1,9 +1,9 @@
 import { ArrowLeft, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { NotesThread } from '@/components/notes/NotesThread'
 import { BoxIllustration } from '@/components/illustrations/Illustrations'
-import { Badge, Button, Card, ConfirmDialog, EmptyState, Select, Spinner } from '@/components/ui'
+import { Badge, Button, Card, ConfirmDialog, EmptyState, Select, Spinner, TitleInput } from '@/components/ui'
 import { stagePatch, stagesOf, useOptionSet, useProject, useProjectMutations, useProjectNotes, useStageTemplates } from '@/data/projectHooks'
 import type { Project } from '@/data/types'
 import { BasicInfoCard } from '@/features/projects/detail/BasicInfoCard'
@@ -20,9 +20,7 @@ function Header({ project }: { project: Project }) {
   const stagesQ = useStageTemplates()
   const stages = stagesOf(stagesQ.data, project.type_id)
   const m = useProjectMutations()
-  const [name, setName] = useState(project.name)
   const [confirm, setConfirm] = useState(false)
-  useEffect(() => setName(project.name), [project.name])
 
   return (
     <div className="mb-8">
@@ -30,16 +28,14 @@ function Header({ project }: { project: Project }) {
         <ArrowLeft size={14} /> 專案
       </Link>
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-[1_1_18rem]">
           <p className="label-caps mb-2 text-text-2">{types.byId(project.type_id)?.label ?? '未設定類型'}</p>
-          <input
-            className="w-full rounded-lg bg-transparent text-4xl font-medium tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-focus)] sm:text-5xl"
+          <TitleInput
+            className="text-3xl font-medium tracking-tight sm:text-5xl"
             aria-label="專案名稱"
-            value={name}
+            value={project.name}
             disabled={!online}
-            onChange={(e) => setName(e.target.value)}
-            onBlur={() => (name.trim() ? name.trim() !== project.name && m.update.mutate({ id: project.id, patch: { name: name.trim() } }) : setName(project.name))}
-            onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+            onCommit={(v) => m.update.mutate({ id: project.id, patch: { name: v } })}
           />
         </div>
         <Button variant="danger" size="sm" icon={<Trash2 size={14} />} disabled={!online} onClick={() => setConfirm(true)}>
@@ -136,13 +132,13 @@ export function ProjectDetailPage() {
   return (
     <div className="mx-auto max-w-[1280px]">
       <Header project={p} />
-      <div className="grid items-start gap-6 xl:grid-cols-[1.5fr_1fr]">
-        <div className="grid gap-6">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-6">
           <TasksCard project={p} />
           <BasicInfoCard project={p} />
           <NotesCard project={p} />
         </div>
-        <div className="grid gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <ProgressCard project={p} />
           <CountdownCard project={p} />
           <CostsCard project={p} />

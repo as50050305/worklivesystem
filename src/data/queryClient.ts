@@ -23,10 +23,13 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30_000,
+      // 離線時保留快取供瀏覽（需 ≥ 持久化保存期限）
+      gcTime: 7 * 24 * 60 * 60 * 1000,
       retry: 1,
       refetchOnWindowFocus: true,
     },
-    mutations: { retry: 0 },
+    // 離線時不排隊等待：立即失敗並顯示「變更未儲存」，避免之後在使用者不知情下補寫
+    mutations: { retry: 0, networkMode: 'always' },
   },
   mutationCache: new MutationCache({
     onError: (err) => listeners.forEach((fn) => fn(friendlyError(err))),
@@ -36,10 +39,10 @@ export const queryClient = new QueryClient({
 /** 資料表 → 受影響的查詢 key 前綴 */
 export const TABLE_KEYS: Record<string, string[][]> = {
   color_tags: [['color_tags'], ['timeline'], ['sidebar']],
-  timeline_items: [['timeline'], ['sidebar'], ['projects']],
+  timeline_items: [['timeline'], ['sidebar'], ['projects'], ['search']],
   checklist_items: [['checklist'], ['sidebar']],
   projects: [['projects'], ['sidebar']],
-  project_notes: [['projects']],
+  project_notes: [['projects'], ['search']],
   project_costs: [['projects']],
   project_links: [['projects']],
   attachments: [['projects']],
@@ -50,7 +53,7 @@ export const TABLE_KEYS: Record<string, string[][]> = {
   clients: [['clients'], ['sidebar']],
   client_followups: [['clients']],
   client_meetings: [['clients']],
-  client_notes: [['clients']],
+  client_notes: [['clients'], ['search']],
   client_contacts: [['clients'], ['contacts']],
   contacts: [['contacts'], ['clients']],
   app_settings: [['settings']],
@@ -58,7 +61,7 @@ export const TABLE_KEYS: Record<string, string[][]> = {
   quote_lines: [['quotes']],
   quote_item_library: [['quote_items']],
   contract_templates: [['contract_templates']],
-  contracts: [['contracts']],
+  contracts: [['contracts'], ['search']],
 }
 
 export function invalidateTable(table: string): void {

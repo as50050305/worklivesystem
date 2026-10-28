@@ -1,14 +1,22 @@
 import { Check, Download, RefreshCw, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useEffect, useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { useAppState } from '@/app/AppStateProvider'
 import { PageHeader } from '@/components/PageHeader'
 import { Alert, Badge, Button, Card, Chip, ProgressRing, Spinner } from '@/components/ui'
-import { colorTagsRepo } from '@/data/repositories/colorTagsRepo'
-import type { ColorTag } from '@/data/types'
+import { useColorTags } from '@/data/hooks'
 import { formatDateTime } from '@/lib/dates'
 import { appVersion, buildTime } from '@/lib/env'
 import { usePwa } from '@/pwa/PwaProvider'
+import { useOnline } from '@/pwa/useOnline'
+
+function readLastBackup(): string | null {
+  try {
+    return localStorage.getItem('wls.lastBackupAt')
+  } catch {
+    return null
+  }
+}
 
 type Status = 'ok' | 'fail' | 'pending' | 'info'
 
@@ -36,7 +44,7 @@ function Row({ status, label, children }: { status: Status; label: string; child
 }
 
 const PHASES = [
-  ['P1', '骨架、Supabase、登入、Style Guide、部署、PWA'],
+  ['P1', '骨架、Supabase、Style Guide、部署、PWA'],
   ['P2', '顏色標籤、時間軸、側邊欄'],
   ['P3', '專案、筆記、階段模板、看板、地圖'],
   ['P4', '收藏庫與轉換'],
@@ -46,18 +54,14 @@ const PHASES = [
 ] as const
 
 export function HomePage() {
-  const { settings, setupError } = useAppState()
+  const { settings, setupError, usingCachedSettings } = useAppState()
   const pwa = usePwa()
-  const [tags, setTags] = useState<ColorTag[] | null>(null)
-  const [tagError, setTagError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!settings) return
-    colorTagsRepo
-      .list()
-      .then(setTags)
-      .catch((e: unknown) => setTagError(e instanceof Error ? e.message : String(e)))
-  }, [settings])
+  const online = useOnline()
+  const tagsQ = useColorTags()
+  const tags = tagsQ.data ?? null
+  const tagError = tagsQ.error ? (tagsQ.error instanceof Error ? tagsQ.error.message : String(tagsQ.error)) : null
+  const lastBackup = readLastBackup()
+  const backupDays = lastBackup ? Math.floor((Date.now() - new Date(lastBackup).getTime()) / 86_400_000) : null
 
   return (
     <>
@@ -83,6 +87,16 @@ export function HomePage() {
             </Row>
             <Row status={settings?.seeded_at ? 'ok' : setupError ? 'fail' : 'pending'} label="預設資料">
               {settings?.seeded_at ? `已建立（${formatDateTime(settings.seeded_at)}）` : setupError ? '建立失敗' : '建立中…'}
+            </Row>
+            <Row status={online && !usingCachedSettings ? 'ok' : 'info'} label="連線">
+              {online && !usingCachedSettings ? '已連線，資料即時同步' : '離線中：顯示這台裝置上次同步的資料，暫停編輯；恢復連線後自動更新'}
+            </Row>
+            <Row status={backupDays !== null && backupDays <= 30 ? 'ok' : 'info'} label="備份">
+              {lastBackup ? `這台裝置上次匯出：${formatDateTime(lastBackup)}${backupDays! > 30 ? `（已超過 ${backupDays} 天）` : ''}` : '這台裝置尚未匯出過備份'}
+              {'　'}
+              <Link to="/settings?tab=backup" className="underline decoration-dotted underline-offset-4">
+                匯出／匯入
+              </Link>
             </Row>
             <Row status={tags ? 'ok' : tagError ? 'fail' : 'pending'} label="資料讀取（RLS）">
               {tags ? (
@@ -128,13 +142,13 @@ export function HomePage() {
 
         <Card title="開發進度">
           <div className="flex justify-center py-2">
-            <ProgressRing value={(6 / 7) * 100} size={220} label="P6 ／ 7" sublabel="報價與合約完成" />
+            <ProgressRing value={100} size={220} label="P7 ／ 7" sublabel="全部完成" />
           </div>
           <ol className="mt-4">
-            {PHASES.map(([p, desc], i) => (
+            {PHASES.map(([p, desc]) => (
               <li key={p} className="flex items-center gap-3 border-b border-dashed border-line-soft py-2 text-sm last:border-0">
-                <Badge tone={i <= 5 ? 'primary' : 'neutral'}>{p}</Badge>
-                <span className={i <= 5 ? 'text-text' : 'text-text-2'}>{desc}</span>
+                <Badge tone="primary">{p}</Badge>
+                <span>{desc}</span>
               </li>
             ))}
           </ol>

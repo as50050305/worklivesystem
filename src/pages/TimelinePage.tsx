@@ -1,7 +1,7 @@
 import { DndContext, DragOverlay, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { PageHeader } from '@/components/PageHeader'
 import { Alert, Button, Spinner, Tabs } from '@/components/ui'
 import { useChecklist, useColorTags, useTimelineMutations, useTimelineRange } from '@/data/hooks'
@@ -59,7 +59,17 @@ export function TimelinePage() {
     return m
   }, [checklistQ.data])
 
-  const { openCreate } = useTimelineEditor()
+  const { openCreate, openEdit } = useTimelineEditor()
+  // 從全域搜尋開啟某個項目：跳到該日並打開編輯抽屜
+  const location = useLocation()
+  const navigate = useNavigate()
+  useEffect(() => {
+    const it = (location.state as { openItem?: TimelineItem } | null)?.openItem
+    if (!it) return
+    openEdit(it)
+    navigate(location.pathname + location.search, { replace: true, state: null })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state])
   const online = useOnline()
   const mut = useTimelineMutations()
   const [dragging, setDragging] = useState<TimelineItem | null>(null)

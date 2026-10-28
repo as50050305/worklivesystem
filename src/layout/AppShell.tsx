@@ -1,10 +1,11 @@
 import { CloudOff, Menu, Moon, OctagonAlert, RefreshCw, Search, Sun, X } from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { runDailyCheck } from '@/automation/dailyCheck'
 import '@/automation/tasks'
 import { useAppState } from '@/app/AppStateProvider'
 import { useRealtimeSync } from '@/data/hooks'
 import { onMutationError } from '@/data/queryClient'
+import { CommandPalette, SHORTCUT_LABEL, useSearchShortcut } from '@/features/search/CommandPalette'
 import { TimelineEditorProvider } from '@/features/timeline/EditorContext'
 import { useToday } from '@/lib/useToday'
 import { NavLink, useLocation } from 'react-router-dom'
@@ -88,10 +89,12 @@ function useBackgroundSync() {
   const { settings } = useAppState()
   const ready = Boolean(settings)
   const today = useToday()
+  const online = useOnline()
   useRealtimeSync(ready)
+  // 每日檢查：開啟、跨日、以及離線後恢復連線時（失敗會釋放宣告，可重試）
   useEffect(() => {
-    if (ready) runDailyCheck(today).catch(() => {})
-  }, [ready, today])
+    if (ready && online) runDailyCheck(today).catch(() => {})
+  }, [ready, today, online])
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -106,6 +109,9 @@ function AppShellInner({ children }: { children: ReactNode }) {
   useBackgroundSync()
   const [collapsed, setCollapsed] = useState(readCollapsed)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const toggleSearch = useCallback(() => setSearchOpen((o) => !o), [])
+  useSearchShortcut(toggleSearch)
   const location = useLocation()
 
   useEffect(() => setDrawerOpen(false), [location.pathname])
@@ -186,7 +192,7 @@ function AppShellInner({ children }: { children: ReactNode }) {
             </div>
             <div className="ml-auto flex flex-none items-center gap-1">
               <OfflinePill />
-              <Button variant="ghost" iconOnly size="sm" aria-label="快速搜尋（P7）" title="快速搜尋 Ctrl／⌘ + K（P7）" disabled icon={<Search size={18} strokeWidth={1.5} />} />
+              <Button variant="ghost" iconOnly size="sm" aria-label="搜尋" title={`搜尋（${SHORTCUT_LABEL}）`} onClick={() => setSearchOpen(true)} icon={<Search size={18} strokeWidth={1.5} />} />
               <ThemeButton />
             </div>
           </div>
@@ -194,6 +200,7 @@ function AppShellInner({ children }: { children: ReactNode }) {
         </header>
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</main>
       </div>
+      {searchOpen && <CommandPalette open onClose={() => setSearchOpen(false)} />}
     </div>
   )
 }

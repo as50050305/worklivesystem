@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { NotesThread } from '@/components/notes/NotesThread'
 import { BoxIllustration } from '@/components/illustrations/Illustrations'
-import { Alert, Badge, Button, Card, ConfirmDialog, EmptyState, Select, Spinner, Switch } from '@/components/ui'
+import { Alert, Badge, Button, Card, ConfirmDialog, EmptyState, Select, Spinner, Switch, TitleInput } from '@/components/ui'
 import { useClient, useClientActions, useClientMutations, useClientNotes } from '@/data/clientHooks'
 import { useOptionSet } from '@/data/projectHooks'
 import type { Client } from '@/data/types'
@@ -23,7 +23,6 @@ function Header({ client }: { client: Client }) {
   const coop = useOptionSet('cooperation_status')
   const fstatus = useOptionSet('followup_status')
   const [code, setCode] = useState(client.code)
-  const [name, setName] = useState(client.name)
   const [msg, setMsg] = useState<string | null>(null)
   const [confirm, setConfirm] = useState(false)
   const stage = useSalesStageChange((r) => setMsg(!r.ok ? r.reason : (r.message ?? null)))
@@ -32,7 +31,6 @@ function Header({ client }: { client: Client }) {
   const [decline, setDecline] = useState(client.decline_next)
   useEffect(() => {
     setCode(client.code)
-    setName(client.name)
     setWorked(client.has_worked_together)
     setDecline(client.decline_next)
   }, [client])
@@ -43,7 +41,7 @@ function Header({ client }: { client: Client }) {
         <ArrowLeft size={14} /> 客戶
       </Link>
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-[1_1_18rem]">
           <input
             className="tabular w-28 rounded-lg bg-transparent font-mono text-sm text-text-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-focus)]"
             aria-label="客戶編號"
@@ -52,13 +50,12 @@ function Header({ client }: { client: Client }) {
             onChange={(e) => setCode(e.target.value)}
             onBlur={() => (code.trim() && code.trim() !== client.code ? actions.update.mutate({ id: client.id, patch: { code: code.trim() } }) : setCode(client.code))}
           />
-          <input
-            className="mt-1 w-full rounded-lg bg-transparent text-4xl font-medium tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-focus)] sm:text-5xl"
+          <TitleInput
+            className="mt-1 text-3xl font-medium tracking-tight sm:text-5xl"
             aria-label="品牌名稱"
-            value={name}
+            value={client.name}
             disabled={!online}
-            onChange={(e) => setName(e.target.value)}
-            onBlur={() => (name.trim() && name.trim() !== client.name ? actions.update.mutate({ id: client.id, patch: { name: name.trim() } }) : setName(client.name))}
+            onCommit={(v) => actions.update.mutate({ id: client.id, patch: { name: v } })}
           />
           {client.decline_next && (
             <Badge tone="danger" className="mt-3 h-7 px-3 text-[12px]">
@@ -175,8 +172,8 @@ export function ClientDetailPage() {
   return (
     <div className="mx-auto max-w-[1280px]">
       <Header client={c} />
-      <div className="grid items-start gap-6 xl:grid-cols-[1.4fr_1fr]">
-        <div className="grid gap-6">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-6">
           <FollowupPanel client={c} />
           <Card title="速記">
             <NotesThread
@@ -190,7 +187,7 @@ export function ClientDetailPage() {
           </Card>
           <FollowupLog client={c} />
         </div>
-        <div className="grid gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <ContactInfoCard client={c} />
           <MeetingsCard client={c} />
           <LinkedContactsCard client={c} />
