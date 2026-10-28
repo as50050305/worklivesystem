@@ -12,3 +12,7 @@ supabase/.branches
 
 # Claude 桌面版存放截圖的資料夾（不需要上傳）
 Claude outputs/
+
+# 本機版：可攜版 Node.js 與你的資料（資料只留在這台電腦，絕不上傳）
+.local/
+data/

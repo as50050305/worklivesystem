@@ -335,7 +335,7 @@ export function AttachmentsCard({ project }: { project: Project }) {
           setToDelete(null)
         }}
       >
-        檔案會從雲端刪除，無法復原。
+        檔案會被永久刪除，無法復原。
       </ConfirmDialog>
     </Card>
   )

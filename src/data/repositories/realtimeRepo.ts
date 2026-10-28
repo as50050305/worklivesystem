@@ -1,3 +1,4 @@
+import { isLocalMode } from '@/lib/env'
 import { getSupabase } from '@/lib/supabase'
 
 /**
@@ -6,6 +7,8 @@ import { getSupabase } from '@/lib/supabase'
  */
 export const realtimeRepo = {
   subscribe(onChange: (table: string) => void): () => void {
+    // 本機模式只有一台電腦，不需要即時同步
+    if (isLocalMode) return () => {}
     const sb = getSupabase()
     const channel = sb
       .channel('db-changes')

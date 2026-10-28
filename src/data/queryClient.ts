@@ -1,4 +1,5 @@
-import { MutationCache, QueryClient } from '@tanstack/react-query'
+import { MutationCache, QueryClient, onlineManager } from '@tanstack/react-query'
+import { isLocalMode } from '@/lib/env'
 
 type ErrorListener = (message: string | null) => void
 const listeners = new Set<ErrorListener>()
@@ -10,13 +11,19 @@ export function friendlyError(err: unknown): string {
   if (e?.code === '42501' || /row-level security/i.test(msg)) return '沒有權限執行此操作（請確認資料庫 migration 已全部套用）'
   if (e?.code === '23505') return '資料重複，請檢查是否已有相同的項目'
   if (e?.code === '23503') return '此資料仍被其他項目使用，無法刪除'
-  if (/failed to fetch|network/i.test(msg)) return '無法連線到伺服器，變更未儲存'
+  if (/failed to fetch|network/i.test(msg)) return isLocalMode ? '連不到本機程式，請確認「工作生活規劃」的黑色視窗還開著（關掉了就重新開啟捷徑），變更未儲存' : '無法連線到伺服器，變更未儲存'
   return msg
 }
 
 export function onMutationError(fn: ErrorListener): () => void {
   listeners.add(fn)
   return () => listeners.delete(fn)
+}
+
+// 本機模式：伺服器就在這台電腦，沒有網路也照常讀寫
+if (isLocalMode) {
+  onlineManager.setEventListener(() => () => {})
+  onlineManager.setOnline(true)
 }
 
 export const queryClient = new QueryClient({

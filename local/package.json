@@ -1,0 +1,9 @@
+{
+  "name": "worklivesystem-local",
+  "private": true,
+  "type": "module",
+  "description": "本機模式：內嵌資料庫 + API + 網頁伺服器",
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.12"
+  }
+}

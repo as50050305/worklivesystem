@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Windows 腳本固定使用 CRLF
+*.bat text eol=crlf
+*.ps1 text eol=crlf

@@ -9,6 +9,32 @@ React + TypeScript + Vite + Tailwind CSS，資料放在 Supabase，部署到 Ver
 
 ---
 
+## ★ 本機版（推薦：不需要任何帳號，資料只在你的電腦）
+
+1. 雙擊資料夾裡的 **`install.bat`**。它會自動：
+   - 下載可攜版 Node.js 到 `.local\node`（不安裝到系統、不需要系統管理員權限）
+   - 安裝套件、建置網頁
+   - 在桌面建立「**工作生活規劃**」捷徑
+2. 之後要使用：雙擊桌面捷徑（或資料夾裡的 `start.bat`），瀏覽器會打開 <http://localhost:5858/>。
+3. 使用期間會有一個最小化的黑色視窗，**關掉它就是結束程式**。
+
+| 項目 | 說明 |
+|---|---|
+| 資料位置 | `data\`（資料庫 `pgdata`、附件 `files`）。已列入 `.gitignore`，不會被推上 GitHub |
+| 自動快照 | 每天第一次開啟時，把整個資料庫備份到 `data\snapshots`（保留最近 14 天） |
+| 從快照還原 | 先關閉程式，在資料夾開終端機：`.local\node\node.exe local\server.mjs --restore-snapshot data\snapshots\db-YYYYMMDD.tar.gz`（目前資料會先移到 `data\pgdata-還原前-…`） |
+| 手動備份 | App 內「設定 → 匯出／匯入」下載 JSON（建議存到隨身碟或雲端硬碟） |
+| 換電腦 | 新電腦執行 `install.bat` 後，用 App 匯入 JSON 備份；或關閉程式後把整個 `data` 資料夾複製過去 |
+| 更新程式 | 取得新版程式碼後，**再執行一次 `install.bat`**（資料不受影響，資料庫更新會自動套用） |
+| 沒有網路 | 照常讀寫（資料就在本機），不會進入唯讀模式 |
+| 連接埠被占用 | `start.bat --port 5859` |
+| 安全性 | 只接受這台電腦自己的連線（127.0.0.1），區網其他裝置連不到 |
+
+> 本機版用的是內嵌在程式裡的 Postgres（PGlite），與雲端版共用同一套資料表、權限規則與 migration。手機無法使用本機版。
+> 以下第 1～3 節是雲端版（Supabase + Vercel）的做法，使用本機版可以略過。
+
+---
+
 ## 目錄
 
 1. [專案結構](#專案結構)
@@ -24,6 +50,10 @@ React + TypeScript + Vite + Tailwind CSS，資料放在 Supabase，部署到 Ver
 ## 專案結構
 
 ```
+├─ install.bat / start.bat        本機版：安裝／啟動
+├─ local/
+│  ├─ server.mjs                  本機版伺服器（內嵌 Postgres＋Supabase 相容 API＋網頁）
+│  └─ install.ps1                 install.bat 實際執行的安裝步驟
 ├─ supabase/
 │  ├─ config.toml                 Supabase CLI 設定（本機用）
 │  └─ migrations/                 資料庫 schema（依時間戳依序套用，不可修改已套用的檔案）

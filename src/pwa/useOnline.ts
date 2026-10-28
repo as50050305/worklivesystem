@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react'
+import { isLocalMode } from '@/lib/env'
 
 function subscribe(cb: () => void) {
   window.addEventListener('online', cb)
@@ -13,7 +14,8 @@ function subscribe(cb: () => void) {
 export function useOnline(): boolean {
   return useSyncExternalStore(
     subscribe,
-    () => navigator.onLine,
+    // 本機模式：資料就在這台電腦，沒有網路也能編輯
+    () => isLocalMode || navigator.onLine,
     () => true,
   )
 }
