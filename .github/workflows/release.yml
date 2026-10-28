@@ -1,0 +1,88 @@
+name: Release（打包 Windows／Mac 安裝檔）
+
+# 在 GitHub 網頁按「Publish release」後自動執行：
+#   檢查 → 測試 → 以本機模式建置 → 打包 Windows、Mac 兩個 zip → 試跑 → 附加到該 Release
+# 標籤（tag）格式：v1.2.3
+# 也可以在 Actions 分頁手動執行，補上某個 Release 的安裝檔。
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '要補上安裝檔的 Release 標籤（例如 v1.0.0）'
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            local/package-lock.json
+
+      - name: 版本號（取自標籤）
+        run: |
+          VERSION="${TAG#v}"
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::標籤格式要像 v1.2.3（目前是 $TAG）"; exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
+      - name: 建置（本機模式）
+        run: npx vite build
+        env:
+          VITE_SUPABASE_URL: same-origin
+          VITE_SUPABASE_ANON_KEY: local
+          VITE_LOCAL_MODE: '1'
+
+      - name: 本機伺服器套件
+        working-directory: local
+        run: npm ci --omit=dev
+
+      - name: 打包
+        run: bash packaging/build-release.sh "$VERSION" "${{ github.repository }}"
+
+      - name: 試跑打包好的程式
+        run: |
+          set -e
+          T=$(mktemp -d)
+          unzip -q "release-out/WorkLifePlanner-mac-v$VERSION.zip" -d "$T"
+          cd "$T/WorkLifePlanner"
+          WLS_NO_OPEN=1 node local/server.mjs > server.log 2>&1 &
+          PID=$!
+          for i in $(seq 1 60); do curl -fs http://127.0.0.1:5858/__local/health && break; sleep 1; done
+          echo
+          curl -fs http://127.0.0.1:5858/__local/health | grep -q "\"version\":\"$VERSION\""
+          curl -fs -o /dev/null http://127.0.0.1:5858/
+          curl -fs -X POST -H 'content-type: application/json' -d '{}' http://127.0.0.1:5858/rest/v1/rpc/bootstrap_defaults | grep -q true
+          curl -fs 'http://127.0.0.1:5858/rest/v1/option_items?select=id&limit=1' | grep -q '"id"'
+          kill $PID; wait $PID || true
+          cat server.log
+
+      - name: 附加到 Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" release-out/*.zip --clobber

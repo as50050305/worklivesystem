@@ -21,6 +21,13 @@ const DIST = path.join(ROOT, 'dist')
 const MIGRATIONS = path.join(ROOT, 'supabase', 'migrations')
 const OWNER = '00000000-0000-0000-0000-000000000001'
 const KEEP_SNAPSHOTS = 14
+const VERSION = (() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(ROOT, 'version.json'), 'utf8')).version
+  } catch {
+    return '開發版'
+  }
+})()
 
 const args = process.argv.slice(2)
 const argVal = (name) => {
@@ -67,8 +74,15 @@ async function openDb() {
   // 依檔名順序套用尚未套用的 migration（之後改版只要重新執行 install.bat）
   const applied = new Set((await db.query('select name from local_meta.migrations')).rows.map((r) => r.name))
   const files = fs.existsSync(MIGRATIONS) ? fs.readdirSync(MIGRATIONS).filter((f) => f.endsWith('.sql')).sort() : []
-  for (const f of files) {
-    if (applied.has(f)) continue
+  const pending = files.filter((f) => !applied.has(f))
+  // 已有資料、而且這次要更新資料庫結構：先完整備份一份，萬一新版有問題可以用 --restore-snapshot 回去
+  if (pending.length && applied.size) {
+    await fsp.mkdir(SNAPSHOTS, { recursive: true })
+    const file = path.join(SNAPSHOTS, `db-升級前-${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}.tar.gz`)
+    await fsp.writeFile(file, Buffer.from(await (await db.dumpDataDir('gzip')).arrayBuffer()))
+    log('資料庫即將更新，已先備份到：', path.relative(ROOT, file))
+  }
+  for (const f of pending) {
     log('套用資料庫更新：', f)
     await db.transaction(async (tx) => {
       await tx.exec(fs.readFileSync(path.join(MIGRATIONS, f), 'utf8'))
@@ -561,7 +575,7 @@ async function main() {
     try {
       if (req.method === 'OPTIONS') return send(res, 204, undefined)
       const url = new URL(req.url, URL_BASE)
-      if (url.pathname === '/__local/health') return send(res, 200, { app: 'worklivesystem', ok: true })
+      if (url.pathname === '/__local/health') return send(res, 200, { app: 'worklivesystem', ok: true, version: VERSION })
       if (url.pathname.startsWith('/rest/v1/')) return await handleRest(db, req, res, url)
       if (url.pathname.startsWith('/storage/v1/')) return await handleStorage(db, req, res, url)
       if (url.pathname.startsWith('/auth/v1')) return handleAuth(req, res, url)
@@ -588,7 +602,7 @@ async function main() {
   server.listen(PORT, '127.0.0.1', () => {
     console.log('')
     console.log('  ==============================================')
-    console.log(`   工作生活規劃 已啟動：${URL_BASE}/`)
+    console.log(`   工作生活規劃 ${VERSION} 已啟動：${URL_BASE}/`)
     console.log(`   資料位置：${DATA}`)
     console.log('   使用期間請不要關閉這個視窗')
     console.log('   要結束時：關閉這個視窗，或按 Ctrl + C')

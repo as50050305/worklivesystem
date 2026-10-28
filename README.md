@@ -30,6 +30,33 @@ React + TypeScript + Vite + Tailwind CSS，資料放在 Supabase，部署到 Ver
 | 連接埠被占用 | `start.bat --port 5859` |
 | 安全性 | 只接受這台電腦自己的連線（127.0.0.1），區網其他裝置連不到 |
 
+### 發布新版本（GitHub Releases，自動產生 Windows／Mac 安裝檔）
+
+1. 用 GitHub Desktop **Commit** → **Push origin**，把程式推上 GitHub。
+2. 打開 GitHub 上的 repo → 右側 **Releases** → **Draft a new release**（或 **Create a new release**）。
+3. **Choose a tag**：輸入新版本號，例如 `v1.0.0`（之後 `v1.0.1`、`v1.1.0`…，一定要比上一版大），按 **Create new tag**。
+4. **Release title** 填版本號；說明欄寫這版改了什麼（會顯示在更新程式裡）。
+5. 按 **Publish release**。
+6. 到 **Actions** 分頁會看到「Release（打包 Windows／Mac 安裝檔）」在跑（約 3～5 分鐘）。完成後 Release 底下會多出：
+   - `WorkLifePlanner-windows-v1.0.0.zip`
+   - `WorkLifePlanner-mac-v1.0.0.zip`
+
+打包前會先跑型別檢查、單元測試，並實際啟動一次打包好的程式；任何一步失敗就不會附上安裝檔（Actions 頁面會顯示紅色 ✗）。要補上某個 Release 的安裝檔，可以在 Actions → 這個流程 → **Run workflow** 輸入標籤重跑。
+
+### 下載安裝（給使用的電腦）
+
+| | Windows | Mac |
+|---|---|---|
+| 下載 | Release 頁面的 `…-windows-….zip` | Release 頁面的 `…-mac-….zip` |
+| 安裝 | 解壓縮 → 雙擊 `install.bat` | 解壓縮 → 雙擊 `install.command`（第一次被擋時：右鍵 →「打開」） |
+| 每天使用 | 桌面「工作生活規劃」捷徑 | 桌面「工作生活規劃」啟動檔 |
+| 更新 | 雙擊 `update.bat` | 雙擊 `update.command` |
+
+- 更新程式會到 GitHub 抓**最新的 Release**，只更換程式檔，`data`（資料）與 `.local`（Node.js）不動；更換失敗會自動還原成原本的版本。
+- repo 是**私有**的話，第一次更新會請你貼一組**唯讀權杖**（畫面上有步驟：GitHub → Settings → Developer settings → Fine-grained token，只勾這個 repo 的 Contents: Read-only），存在該電腦的 `.local/github-token`。公開 repo 不需要權杖。
+- 新版有資料庫結構變更時，第一次開啟會先把資料庫備份到 `data/snapshots/db-升級前-….tar.gz` 再更新。
+- zip 裡的 `README.txt` 有完整的使用說明（含 Mac 被擋時的處理方式）。
+
 > 本機版用的是內嵌在程式裡的 Postgres（PGlite），與雲端版共用同一套資料表、權限規則與 migration。手機無法使用本機版。
 > 以下第 1～3 節是雲端版（Supabase + Vercel）的做法，使用本機版可以略過。
 
@@ -50,10 +77,16 @@ React + TypeScript + Vite + Tailwind CSS，資料放在 Supabase，部署到 Ver
 ## 專案結構
 
 ```
-├─ install.bat / start.bat        本機版：安裝／啟動
+├─ install.bat / start.bat        本機版（從原始碼）：安裝／啟動
 ├─ local/
 │  ├─ server.mjs                  本機版伺服器（內嵌 Postgres＋Supabase 相容 API＋網頁）
+│  ├─ update.mjs                  從 GitHub Releases 更新（Windows／Mac 共用）
 │  └─ install.ps1                 install.bat 實際執行的安裝步驟
+├─ packaging/
+│  ├─ build-release.sh            打包成 Windows、Mac 兩個 zip
+│  ├─ windows/                    Release 版的 install／start／update.bat、README.txt
+│  └─ mac/                        Release 版的 install／start／update.command、README.txt
+├─ .github/workflows/release.yml  發布 Release 時自動打包並附上安裝檔
 ├─ supabase/
 │  ├─ config.toml                 Supabase CLI 設定（本機用）
 │  └─ migrations/                 資料庫 schema（依時間戳依序套用，不可修改已套用的檔案）

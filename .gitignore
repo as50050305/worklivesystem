@@ -16,3 +16,6 @@ Claude outputs/
 # 本機版：可攜版 Node.js 與你的資料（資料只留在這台電腦，絕不上傳）
 .local/
 data/
+
+# 打包 Release 時的暫存輸出
+release-out/

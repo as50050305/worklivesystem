@@ -6,8 +6,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
 import pkg from './package.json' with { type: 'json' }
 
-// 版本字串：Vercel 會提供 commit SHA；本機則用 dev
-const sha = (process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.CF_PAGES_COMMIT_SHA ?? 'dev').slice(0, 7)
+// 版本字串：Vercel／GitHub Actions 會提供 commit SHA；本機則用 dev
+const sha = (process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.CF_PAGES_COMMIT_SHA ?? process.env.GITHUB_SHA ?? 'dev').slice(0, 7)
 
 export default defineConfig({
   define: {
