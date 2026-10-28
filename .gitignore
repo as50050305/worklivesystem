@@ -1,0 +1,14 @@
+node_modules
+dist
+dev-dist
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.vercel
+supabase/.temp
+supabase/.branches
+
+# Claude 桌面版存放截圖的資料夾（不需要上傳）
+Claude outputs/

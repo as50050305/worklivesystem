@@ -1,0 +1,123 @@
+/* =====================================================================
+   設計 Token
+   - 深色為預設；<html data-theme="light"> 切換淺色（米白紙感）
+   - 品牌五色依規格；其餘為推導色，對比已用 scripts/check-contrast.mjs 驗證（WCAG AA）
+   - *-ink：用於「文字或細線」的版本；原色用於填色、圓點、大面積標記
+   ===================================================================== */
+
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* 品牌色（規格） */
+  --brand-gunmetal: #303633;
+  --brand-primary: #8be8cb;
+  --brand-steel: #7ea2aa;
+  --brand-lavender: #888da7;
+  --brand-mauve: #9c7a97;
+
+  /* 面 */
+  --c-bg: #1e2220;          /* 更深的頁面底色 */
+  --c-surface: #303633;     /* 卡片、側欄（Gunmetal） */
+  --c-surface-2: #3a413d;   /* 抬升／輸入框／hover */
+  --c-surface-3: #262b28;   /* 內凹 */
+
+  /* 線 */
+  --c-line: #8c9792;        /* 元件外框（對面 ≥ 3:1） */
+  --c-line-soft: #4f5853;   /* 虛線分隔、網點（裝飾用） */
+  --c-hatch: #5d6761;       /* 斜線網點 */
+
+  /* 文字 */
+  --c-text: #e8eeea;
+  --c-text-2: #afb9b4;
+  --c-text-3: #7c8681;      /* 停用、placeholder（不要求 AA） */
+
+  /* 主要操作 */
+  --c-primary: #8be8cb;
+  --c-primary-ink: #8be8cb;
+  --c-on-primary: #16201c;
+  --c-primary-soft: rgb(139 232 203 / 0.12);
+  --c-btn-primary-border: #8be8cb;
+  --c-btn-primary-shadow: #5d9d89;
+
+  /* 次要／分類／私人 */
+  --c-steel: #7ea2aa;
+  --c-steel-ink: #9dbec5;
+  --c-lavender: #888da7;
+  --c-lavender-ink: #aeb2cb;
+  --c-mauve: #9c7a97;
+  --c-mauve-ink: #c6a6c0;
+
+  /* 狀態 */
+  --c-danger: #f28b7d;
+  --c-danger-soft: rgb(242 139 125 / 0.12);
+  --c-warning: #e9c46a;
+  --c-warning-soft: rgb(233 196 106 / 0.12);
+
+  --c-focus: #8be8cb;
+  --c-backdrop: rgb(10 12 11 / 0.66);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --c-bg: #e3e8de;
+  --c-surface: #eef1e9;
+  --c-surface-2: #e2e7db;
+  --c-surface-3: #d9dfd2;
+
+  --c-line: #2b302d;
+  --c-line-soft: #b4bcb1;
+  --c-hatch: #9aa397;
+
+  --c-text: #1e2321;
+  --c-text-2: #4c5551;
+  --c-text-3: #8a938d;
+
+  --c-primary: #8be8cb;
+  --c-primary-ink: #13735a;
+  --c-on-primary: #16201c;
+  --c-primary-soft: rgb(19 115 90 / 0.1);
+  --c-btn-primary-border: #2b302d;
+  --c-btn-primary-shadow: #2b302d;
+
+  --c-steel: #7ea2aa;
+  --c-steel-ink: #3b6670;
+  --c-lavender: #888da7;
+  --c-lavender-ink: #50567a;
+  --c-mauve: #9c7a97;
+  --c-mauve-ink: #6d4b68;
+
+  --c-danger: #b23a2e;
+  --c-danger-soft: rgb(178 58 46 / 0.08);
+  --c-warning: #7f5b0a;
+  --c-warning-soft: rgb(127 91 10 / 0.08);
+
+  --c-focus: #13735a;
+  --c-backdrop: rgb(30 35 33 / 0.4);
+}
+
+:root {
+  /* 字體 */
+  --ff-sans: 'Space Grotesk Variable', 'Noto Sans TC Variable', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  --ff-mono: 'JetBrains Mono Variable', 'Noto Sans TC Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --ff-cjk: 'Noto Sans TC Variable', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+
+  /* 線寬 */
+  --stroke: 1px;
+  --stroke-strong: 1.5px;
+
+  /* 圓角 */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-2xl: 32px;
+  --r-full: 999px;
+
+  /* 錯位偏移（取代模糊陰影） */
+  --offset-1: 3px;
+  --offset-2: 6px;
+  --offset-3: 9px;
+}

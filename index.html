@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-Hant-TW" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>工作生活規劃</title>
+    <meta name="description" content="個人工作＋生活規劃系統" />
+    <meta name="theme-color" content="#1E2220" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="規劃" />
+    <script>
+      // 在 React 載入前套用主題，避免閃爍
+      try {
+        var t = localStorage.getItem('wls.theme')
+        if (t === 'light') {
+          document.documentElement.dataset.theme = 'light'
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#E3E8DE')
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
