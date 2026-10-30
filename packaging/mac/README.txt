@@ -1,18 +1,35 @@
 ﻿工作生活規劃（Mac 版）
 ======================
 
+★ 先做這一步：解除 Mac 的下載封鎖
+--------------------------------
+從網路下載的檔案會被 Mac 擋住（出現「無法打開」「Apple 無法驗證」）。
+解壓縮並把 WorkLifePlanner 資料夾放到想放的位置後：
+
+1. 打開「終端機」（Launchpad → 其他 → 終端機，或按 ⌘＋空白鍵 搜尋「終端機」）。
+2. 輸入下面這串，最後面要有一個空格（先不要按 return）：
+
+     xattr -dr com.apple.quarantine 
+
+3. 把 WorkLifePlanner 資料夾從 Finder 拖進終端機視窗，路徑會自動填上，例如：
+
+     xattr -dr com.apple.quarantine /Users/你的名字/Documents/WorkLifePlanner
+
+4. 按 return。沒有出現任何訊息就是成功了。
+5. 接著就可以直接雙擊 install.command。
+
+（每次下載新的 zip 重新安裝時，都要再做一次；用 update.command 更新則不需要。）
+
 全部資料都存在你的電腦，不需要註冊任何帳號。支援 Apple 晶片（M 系列）與 Intel Mac。
 
 【第一次安裝】
 1. 雙擊 zip 解壓縮，把「WorkLifePlanner」資料夾移到你想放的位置
    （例如「文件」裡）。之後不要再移動它，桌面的啟動檔會找不到。
-2. 雙擊 install.command。
-   因為不是從 App Store 下載，Mac 可能會擋下來，任選一種方式處理：
+2. 依照最上面「先做這一步」解除封鎖，然後雙擊 install.command。
+   如果還是被擋，也可以：
    方法 A：在 install.command 上按右鍵（或 control＋點按）→「打開」→「打開」。
-   方法 B：若方法 A 沒有「打開」可按：到「系統設定 → 隱私權與安全性」，
-           在下方找到 install.command 的訊息，按「強制打開」。
+   方法 B：到「系統設定 → 隱私權與安全性」，在下方找到 install.command 的訊息，按「強制打開」。
    方法 C：打開「終端機」，輸入 bash 和一個空格，把 install.command 拖進視窗，按 return。
-   安裝程式會自動解除這個資料夾的限制，之後其他檔案都可以直接雙擊。
 3. 安裝完成後，桌面會出現「工作生活規劃」啟動檔。
 
 【每天使用】

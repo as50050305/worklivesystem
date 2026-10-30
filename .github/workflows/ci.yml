@@ -19,6 +19,8 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+      - name: 檢查 Mac 腳本（bash 3.2 相容）
+        run: bash packaging/check-shell.sh
       - run: npm run build
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
