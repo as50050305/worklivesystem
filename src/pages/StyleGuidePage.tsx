@@ -639,7 +639,7 @@ export function StyleGuidePage() {
               <EmptyState illustration={<LampIllustration size={96} />} title="今天沒有排程" />
             </Card>
             <Card padded={false}>
-              <EmptyState illustration={<PlantIllustration size={96} />} title="還沒有收藏" action={<Button size="sm" variant="primary" icon={<Plus size={14} />}>新增收藏</Button>} />
+              <EmptyState illustration={<PlantIllustration size={96} />} title="還沒有行程" action={<Button size="sm" variant="primary" icon={<Plus size={14} />}>新增行程</Button>} />
             </Card>
             <Card padded={false}>
               <EmptyState illustration={<BoxIllustration size={96} />} title="沒有符合的客戶" />

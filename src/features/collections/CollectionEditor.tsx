@@ -12,7 +12,7 @@ import { useOnline } from '@/pwa/useOnline'
 
 export type ConvertKind = 'project' | 'client'
 
-/** 收藏的新增／編輯抽屜 */
+/** 行程的新增／編輯抽屜 */
 export function CollectionEditor({
   collection,
   onClose,
@@ -130,7 +130,7 @@ export function CollectionEditor({
       >
         <header className="flex items-center justify-between gap-3 border-b border-line-soft px-6 py-4">
           <div className="min-w-0">
-            <p className="label-caps text-[11px] text-text-2">{c ? '編輯收藏' : '新增收藏'}</p>
+            <p className="label-caps text-[11px] text-text-2">{c ? '編輯行程' : '新增行程'}</p>
             <h2 id="collection-editor-title" className="truncate text-lg font-semibold">
               {f.name || '未命名'}
             </h2>
@@ -212,7 +212,7 @@ export function CollectionEditor({
         </div>
 
         <footer className="flex flex-wrap items-center gap-2 border-t border-line-soft px-6 py-4">
-          {c && <Button variant="danger" size="sm" iconOnly aria-label="刪除收藏" disabled={!online} onClick={() => setConfirmDelete(true)} icon={<Trash2 size={15} />} />}
+          {c && <Button variant="danger" size="sm" iconOnly aria-label="刪除行程" disabled={!online} onClick={() => setConfirmDelete(true)} icon={<Trash2 size={15} />} />}
           {c && (
             <>
               <Button

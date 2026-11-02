@@ -1,12 +1,13 @@
 import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Alert, Button, Card, ConfirmDialog, DatePicker, Input, Select, Spinner } from '@/components/ui'
-import { stagePatch, stagesOf, useOptionSet, useProjectMutations, useProjectTasks, useStageTemplates } from '@/data/projectHooks'
+import { Alert, Button, Card, ConfirmDialog, DatePicker, Input, Spinner } from '@/components/ui'
+import { stagePatch, stagesOf, useProjectMutations, useProjectTasks, useStageTemplates } from '@/data/projectHooks'
 import { geocodeRepo } from '@/data/repositories/geocodeRepo'
 import type { GeoResult, Project, ProjectInput } from '@/data/types'
 import { formatDate } from '@/lib/dates'
 import { anchorsChanged, rescheduleTasks, type Reschedule } from '@/lib/projects'
 import { useOnline } from '@/pwa/useOnline'
+import { TypeSelect } from '../TypeSelect'
 
 type DateField = 'apply_start_on' | 'apply_deadline_on' | 'event_start_on' | 'event_end_on'
 
@@ -19,7 +20,6 @@ const DATE_FIELDS: { key: DateField; label: string }[] = [
 
 export function BasicInfoCard({ project }: { project: Project }) {
   const online = useOnline()
-  const types = useOptionSet('project_type')
   const stagesQ = useStageTemplates()
   const tasks = useProjectTasks(project.id)
   const m = useProjectMutations()
@@ -91,14 +91,7 @@ export function BasicInfoCard({ project }: { project: Project }) {
   return (
     <Card title="基本資料">
       <div className="grid gap-5">
-        <Select label="類型" value={project.type_id ?? ''} disabled={!online} onChange={(e) => void changeType(e.target.value)} help="更換類型會把階段重設為新類型的第一個階段">
-          <option value="">未設定</option>
-          {types.items.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.label}
-            </option>
-          ))}
-        </Select>
+        <TypeSelect value={project.type_id ?? ''} disabled={!online} allowEmpty emptyLabel="未設定" onChange={(id) => void changeType(id)} help="更換類型會把階段重設為新類型的第一個階段" />
 
         <div className="grid gap-4 sm:grid-cols-2">
           {DATE_FIELDS.map((f) => (

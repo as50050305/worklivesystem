@@ -35,6 +35,38 @@ export function useOptionMutations() {
   }
 }
 
+/* ---------------- 專案類型 ---------------- */
+
+export function useProjectTypeMutations() {
+  const after = () => {
+    invalidateTable('option_items')
+    invalidateTable('stage_templates')
+    invalidateTable('template_tasks')
+    invalidateTable('projects')
+  }
+  return {
+    create: useMutation({ mutationFn: (v: { label: string; sortOrder: number }) => optionsRepo.create('project_type', v.label, v.sortOrder), onSettled: after }),
+    /**
+     * 刪除類型：先把使用中的專案改到 moveTo（階段重設為新類型的第一個階段；進度未手動覆寫時重算），
+     * 再刪除類型（該類型的階段與錨點任務一併刪除）
+     */
+    remove: useMutation({
+      mutationFn: async (v: { id: string; moveTo: string | null }) => {
+        const projects = (await projectsRepo.list()).filter((p) => p.type_id === v.id)
+        if (projects.length) {
+          const stages = stagesOf(await templatesRepo.listStages(), v.moveTo)
+          const first = stages[0]?.id ?? null
+          for (const p of projects) {
+            await projectsRepo.update(p.id, { type_id: v.moveTo, current_stage_id: first, ...(p.progress_is_manual ? {} : { progress: progressFromStage(stages, first) }) })
+          }
+        }
+        await optionsRepo.remove(v.id)
+      },
+      onSettled: after,
+    }),
+  }
+}
+
 /* ---------------- 階段模板 ---------------- */
 
 export function useStageTemplates() {

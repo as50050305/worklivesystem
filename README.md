@@ -1,6 +1,6 @@
 # 個人工作＋生活規劃系統
 
-單人使用的 PWA 網頁 App：專案、時間軸、收藏庫、客戶追蹤、報價單、人脈。
+單人使用的 PWA 網頁 App：專案、時間軸、預定行程、客戶追蹤、報價單、人脈。
 React + TypeScript + Vite + Tailwind CSS，資料放在 Supabase，部署到 Vercel。
 
 > 目前進度：**P1–P7 全部完成**
@@ -99,10 +99,10 @@ React + TypeScript + Vite + Tailwind CSS，資料放在 Supabase，部署到 Ver
 │  ├─ automation/                 每日檢查（跨午夜、回到前景時執行，冪等）
 │  ├─ features/timeline/          時間軸元件（項目卡片、編輯抽屜、日／週／月檢視）
 │  ├─ features/projects/          專案元件（看板、地圖、詳情各區塊）
-│  ├─ features/collections/       收藏庫（編輯抽屜、轉為專案／客戶）
+│  ├─ features/collections/       預定行程（編輯抽屜、轉為專案／客戶）
 │  ├─ features/clients/           客戶（看板、追蹤面板、會議、關聯人脈）
 │  ├─ features/contacts/          人脈編輯
-│  ├─ features/settings/          設定頁（選項表、階段模板）
+│  ├─ features/settings/          設定頁（選項表、專案類型與階段、報價與合約）
 │  ├─ pdf/                        中文 PDF（報價單、合約；動態載入）
 │  ├─ features/quotes/            報價單、品項庫、合約編輯
 │  ├─ features/search/            全域搜尋（Ctrl／⌘ + K）
@@ -279,7 +279,7 @@ git push -u origin main
 
 ### 快捷鍵
 
-- **Ctrl＋K**（Mac：**⌘＋K**）：全域搜尋專案、客戶、報價單、合約、人脈、收藏、時間軸與筆記，也能跳到任何設定頁。
+- **Ctrl＋K**（Mac：**⌘＋K**）：全域搜尋專案、客戶、報價單、合約、人脈、預定行程、時間軸與筆記，也能跳到任何設定頁。
 
 ---
 

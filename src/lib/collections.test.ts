@@ -55,3 +55,20 @@ describe('排序', () => {
   it('日期遞增，空值在最後', () => expect(sortCollections(list, 'apply_deadline_on', 'asc', () => '').map((x) => x.id)).toEqual(['c', 'b', 'a']))
   it('日期遞減，空值仍在最後', () => expect(sortCollections(list, 'apply_deadline_on', 'desc', () => '').map((x) => x.id)).toEqual(['b', 'c', 'a']))
 })
+
+describe('已排定的明年提醒', () => {
+  it('只列未到期、有開啟、有日期的，依日期排序並限制筆數', async () => {
+    const { upcomingReminders } = await import('./collections')
+    const list = [
+      { id: 'a', remind_next_year: true, remind_on: '2027-03-01' },
+      { id: 'b', remind_next_year: true, remind_on: '2026-11-02' },
+      { id: 'c', remind_next_year: false, remind_on: '2026-12-01' },
+      { id: 'd', remind_next_year: true, remind_on: null },
+      { id: 'e', remind_next_year: true, remind_on: '2026-11-03' },
+      { id: 'f', remind_next_year: true, remind_on: '2027-01-01' },
+      { id: 'g', remind_next_year: true, remind_on: '2028-01-01' },
+    ]
+    expect(upcomingReminders(list, '2026-11-02').map((c) => c.id)).toEqual(['e', 'f', 'a'])
+    expect(upcomingReminders(list, '2026-11-02', 10).map((c) => c.id)).toEqual(['e', 'f', 'a', 'g'])
+  })
+})

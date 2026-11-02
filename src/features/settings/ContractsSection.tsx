@@ -2,9 +2,9 @@ import { Plus, Star, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Alert, Badge, Button, Card, ConfirmDialog, Input, Textarea } from '@/components/ui'
 import { useOptionSet } from '@/data/projectHooks'
-import { useBusinessMutation, useBusinessProfile, useContractTemplateMutations, useContractTemplates } from '@/data/quoteHooks'
+import { useBusinessMutation, useBusinessProfile, useContractTemplateMutations, useContractTemplates, useCustomVariables, useCustomVariablesMutation } from '@/data/quoteHooks'
 import type { ContractTemplate } from '@/data/types'
-import { CONTRACT_VARIABLES, type BusinessProfileLike } from '@/lib/quotes'
+import { CONTRACT_VARIABLES, variableNameError, type BusinessProfileLike, type CustomVariable } from '@/lib/quotes'
 import { cn } from '@/lib/cn'
 import { useOnline } from '@/pwa/useOnline'
 import { parseNumber } from '../quotes/shared'
@@ -101,11 +101,120 @@ function BusinessForm({ initial }: { initial: BusinessProfileLike }) {
   )
 }
 
+/* ---------------- 自訂變數 ---------------- */
+
+function VariableRow({ v, names, onSave, onDelete }: { v: CustomVariable; names: string[]; onSave: (next: CustomVariable) => Promise<void>; onDelete: () => void }) {
+  const online = useOnline()
+  const [name, setName] = useState(v.name)
+  const [value, setValue] = useState(v.value)
+  const [err, setErr] = useState<string | null>(null)
+  useEffect(() => {
+    setName(v.name)
+    setValue(v.value)
+  }, [v.name, v.value])
+  const commit = async () => {
+    const n = name.trim()
+    if (n === v.name && value === v.value) return
+    const e = n === v.name ? null : variableNameError(n, names.filter((x) => x !== v.name))
+    if (e) {
+      setErr(e)
+      return
+    }
+    setErr(null)
+    await onSave({ name: n, value })
+  }
+  return (
+    <li className="border-b border-dashed border-line-soft py-2 last:border-0">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto]">
+        <div className="flex min-w-0 items-center gap-1">
+          <span className="font-mono text-sm text-text-3">{'{{'}</span>
+          <input className="input h-9 min-w-0 flex-1 font-mono text-sm" aria-label={`變數名稱：${v.name}`} value={name} disabled={!online} onChange={(e) => setName(e.target.value)} onBlur={() => void commit()} onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()} />
+          <span className="font-mono text-sm text-text-3">{'}}'}</span>
+        </div>
+        <input className="input h-9 min-w-0 text-sm max-sm:col-span-2 max-sm:row-start-2" aria-label={`${v.name} 的預設值`} placeholder="預設值（可留空，產生合約時再填）" value={value} disabled={!online} onChange={(e) => setValue(e.target.value)} onBlur={() => void commit()} onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()} />
+        <Button variant="ghost" size="sm" iconOnly aria-label={`刪除變數 ${v.name}`} disabled={!online} onClick={onDelete} icon={<Trash2 size={14} />} />
+      </div>
+      {err && <p className="mt-1 text-xs text-danger">{err}</p>}
+    </li>
+  )
+}
+
+function VariablesCard() {
+  const online = useOnline()
+  const { variables, isLoading } = useCustomVariables()
+  const save = useCustomVariablesMutation()
+  const [name, setName] = useState('')
+  const [value, setValue] = useState('')
+  const [err, setErr] = useState<string | null>(null)
+  const [toDelete, setToDelete] = useState<CustomVariable | null>(null)
+  const names = variables.map((v) => v.name)
+
+  return (
+    <Card title="自訂變數">
+      <p className="-mt-2 mb-4 text-sm text-text-2">
+        除了內建變數（{CONTRACT_VARIABLES.map((v) => `{{${v}}}`).join(' ')}），可以新增自己的變數，例如 {'{{付款期限}}'}、{'{{作品用途}}'}。預設值會自動代入，產生合約時也能逐份修改。改名時，所有合約模板裡的變數會一起改名。
+      </p>
+      {isLoading ? (
+        <div className="skeleton h-20" />
+      ) : (
+        <ul aria-label="自訂變數">
+          {variables.map((v, i) => (
+            <VariableRow
+              key={v.name}
+              v={v}
+              names={names}
+              onSave={async (next) => {
+                const list = variables.map((x, j) => (j === i ? next : x))
+                await save.mutateAsync({ variables: list, rename: next.name !== v.name ? { from: v.name, to: next.name } : undefined })
+              }}
+              onDelete={() => setToDelete(v)}
+            />
+          ))}
+          {!variables.length && <li className="py-2 text-sm text-text-3">還沒有自訂變數</li>}
+        </ul>
+      )}
+      <form
+        className="mt-3 grid gap-2 border-t border-dashed border-line-soft pt-4 sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto]"
+        onSubmit={async (e) => {
+          e.preventDefault()
+          const n = name.trim()
+          const er = variableNameError(n, names)
+          if (er) return setErr(er)
+          setErr(null)
+          await save.mutateAsync({ variables: [...variables, { name: n, value }] })
+          setName('')
+          setValue('')
+        }}
+      >
+        <input className="input h-9 font-mono text-sm" placeholder="新變數名稱，例如：付款期限" aria-label="新變數名稱" value={name} disabled={!online} onChange={(e) => (setName(e.target.value), setErr(null))} />
+        <input className="input h-9 text-sm" placeholder="預設值（選填）" aria-label="新變數預設值" value={value} disabled={!online} onChange={(e) => setValue(e.target.value)} />
+        <Button type="submit" variant="secondary" size="sm" className="h-9" icon={<Plus size={14} />} loading={save.isPending} disabled={!online || !name.trim()}>
+          新增變數
+        </Button>
+      </form>
+      {err && <Alert tone="danger" className="mt-3">{err}</Alert>}
+      <ConfirmDialog
+        open={toDelete !== null}
+        title={`確定要刪除變數「${toDelete?.name ?? ''}」？`}
+        onCancel={() => setToDelete(null)}
+        onConfirm={async () => {
+          const d = toDelete
+          setToDelete(null)
+          if (d) await save.mutateAsync({ variables: variables.filter((x) => x.name !== d.name) })
+        }}
+      >
+        模板中的 {`{{${toDelete?.name ?? ''}}}`} 會保留原樣（產生合約時會提示尚未代入）；已產生的合約不受影響。
+      </ConfirmDialog>
+    </Card>
+  )
+}
+
 /* ---------------- 合約模板 ---------------- */
 
 function TemplateEditor({ template }: { template: ContractTemplate }) {
   const online = useOnline()
   const m = useContractTemplateMutations()
+  const { variables: custom } = useCustomVariables()
   const [name, setName] = useState(template.name)
   const [body, setBody] = useState(template.body)
   const [saved, setSaved] = useState(false)
@@ -141,6 +250,11 @@ function TemplateEditor({ template }: { template: ContractTemplate }) {
           {CONTRACT_VARIABLES.map((v) => (
             <button key={v} type="button" className="chip h-7 px-2.5 font-mono text-[12px]" disabled={!online} onClick={() => insert(v)}>
               {`{{${v}}}`}
+            </button>
+          ))}
+          {custom.map((v) => (
+            <button key={`c-${v.name}`} type="button" className="chip selected h-7 px-2.5 font-mono text-[12px]" disabled={!online} onClick={() => insert(v.name)} title="自訂變數">
+              {`{{${v.name}}}`}
             </button>
           ))}
         </div>
@@ -238,6 +352,7 @@ export function ContractsSection() {
   return (
     <div className="grid grid-cols-1 gap-6">
       <BusinessCard />
+      <VariablesCard />
       <TemplatesCard />
     </div>
   )

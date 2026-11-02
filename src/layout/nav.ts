@@ -1,4 +1,4 @@
-import { BookUser, Bookmark, CalendarRange, FileText, FolderKanban, LayoutDashboard, Palette, Settings, Users, type LucideIcon } from 'lucide-react'
+import { BookUser, CalendarClock, CalendarRange, FileText, FolderKanban, LayoutDashboard, Palette, Settings, Users, type LucideIcon } from 'lucide-react'
 
 export interface NavItem {
   to: string
@@ -12,7 +12,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: '總覽', icon: LayoutDashboard },
   { to: '/timeline', label: '時間軸', icon: CalendarRange },
   { to: '/projects', label: '專案', icon: FolderKanban },
-  { to: '/collections', label: '收藏庫', icon: Bookmark },
+  { to: '/collections', label: '預定行程', icon: CalendarClock },
   { to: '/clients', label: '客戶', icon: Users },
   { to: '/quotes', label: '報價單', icon: FileText },
   { to: '/contacts', label: '人脈', icon: BookUser },

@@ -75,3 +75,37 @@ describe('報價方資料與合約變數', () => {
     expect(renderContract('{{客戶名稱}} {{總額}} {{授權範圍}} {{我的名稱}} {{訂金比例}}%', v)).toBe('日日好食 52,500 {{授權範圍}} {{我的名稱}} 30%')
   })
 })
+
+describe('自訂合約變數', () => {
+  it('customVariablesFrom：過濾空白、重複、與內建同名', async () => {
+    const { customVariablesFrom } = await import('./quotes')
+    expect(
+      customVariablesFrom({
+        contract_variables: [{ name: ' 付款期限 ', value: '30 天' }, { name: '付款期限', value: 'x' }, { name: '總額', value: '1' }, { name: '有 空白', value: '' }, { name: '', value: '' }, null, { name: '用途' }],
+      }),
+    ).toEqual([
+      { name: '付款期限', value: '30 天' },
+      { name: '用途', value: '' },
+    ])
+    expect(customVariablesFrom({})).toEqual([])
+  })
+  it('variableNameError', async () => {
+    const { variableNameError } = await import('./quotes')
+    expect(variableNameError('付款期限', [])).toBeNull()
+    expect(variableNameError('客戶名稱', [])).toContain('內建')
+    expect(variableNameError('a b', [])).not.toBeNull()
+    expect(variableNameError('{x}', [])).not.toBeNull()
+    expect(variableNameError('用途', ['用途'])).toContain('已有')
+    expect(variableNameError('  ', [])).not.toBeNull()
+  })
+  it('合併順序：自動 → 自訂預設 → 手動；手動空字串保留 {{}}', async () => {
+    const { mergeVariableValues, renderContract } = await import('./quotes')
+    const v = mergeVariableValues({ 客戶名稱: 'A', 總額: '100' }, [{ name: '付款期限', value: '30 天' }, { name: '用途', value: '' }], { 總額: '120', 用途: '包裝', 客戶名稱: '' })
+    expect(renderContract('{{客戶名稱}}/{{總額}}/{{付款期限}}/{{用途}}', v)).toBe('{{客戶名稱}}/120/30 天/包裝')
+  })
+  it('variablesIn、renameVariableIn', async () => {
+    const { variablesIn, renameVariableIn } = await import('./quotes')
+    expect(variablesIn('{{a}} {{ b }} {{a}}')).toEqual(['a', 'b'])
+    expect(renameVariableIn('{{用途}}、{{ 用途 }}、{{用途X}}', '用途', '作品用途')).toBe('{{作品用途}}、{{作品用途}}、{{用途X}}')
+  })
+})

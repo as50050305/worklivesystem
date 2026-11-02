@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Alert, Button, Checkbox, DatePicker, Input, Select } from '@/components/ui'
+import { Alert, Button, Checkbox, DatePicker, Input } from '@/components/ui'
 import { stagesOf, useOptionSet, useProjectMutations, useStageTemplates, useTemplateTasks } from '@/data/projectHooks'
 import { planTemplateTasks, progressFromStage } from '@/lib/projects'
 import { useOnline } from '@/pwa/useOnline'
 import { TagPicker } from '../timeline/TagPicker'
+import { TypeSelect } from './TypeSelect'
 
 export function ProjectCreateDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null)
@@ -86,13 +87,7 @@ export function ProjectCreateDialog({ open, onClose }: { open: boolean; onClose:
           新增專案
         </h2>
         <Input label="專案名稱" value={name} onChange={(e) => setName(e.target.value)} autoFocus placeholder="例如：2027 台北插畫藝術節" />
-        <Select label="類型" value={typeId} onChange={(e) => setTypeId(e.target.value)}>
-          {types.items.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.label}
-            </option>
-          ))}
-        </Select>
+        <TypeSelect value={typeId} onChange={setTypeId} />
         <div>
           <p className="field-label">顏色標籤</p>
           <TagPicker value={tagId} onChange={setTagId} />

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Bookmark, BookUser, CalendarRange, CornerDownLeft, FileText, FolderKanban, LayoutDashboard, NotebookPen, Search, Users, type LucideIcon } from 'lucide-react'
+import { BookUser, CalendarClock, CalendarRange, CornerDownLeft, FileText, FolderKanban, LayoutDashboard, NotebookPen, Search, Users, type LucideIcon } from 'lucide-react'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Spinner } from '@/components/ui'
@@ -25,7 +25,7 @@ const PAGES: { title: string; to: string; subtitle?: string; text?: string }[] =
   { title: '總覽', to: '/', text: 'home dashboard 首頁' },
   { title: '時間軸', to: '/timeline', text: 'timeline calendar 行事曆 日曆 排程' },
   { title: '專案', to: '/projects', text: 'projects 看板 地圖' },
-  { title: '收藏庫', to: '/collections', text: 'collections 收藏' },
+  { title: '預定行程', to: '/collections', text: 'collections 行程 收藏 預定行程' },
   { title: '客戶', to: '/clients', text: 'clients 追蹤' },
   { title: '報價單', to: '/quotes', text: 'quotes 報價' },
   { title: '品項庫', subtitle: '報價單', to: '/quotes?tab=items', text: 'items 單價' },
@@ -33,7 +33,7 @@ const PAGES: { title: string; to: string; subtitle?: string; text?: string }[] =
   { title: '顏色標籤', subtitle: '設定', to: '/settings?tab=tags', text: 'settings tags 生活代辦' },
   { title: '外觀', subtitle: '設定', to: '/settings?tab=appearance', text: 'settings theme 主題 深色 淺色' },
   { title: '選項表', subtitle: '設定', to: '/settings?tab=options', text: 'settings options 類型 狀態' },
-  { title: '階段模板', subtitle: '設定', to: '/settings?tab=templates', text: 'settings templates 任務' },
+  { title: '專案類型與階段', subtitle: '設定', to: '/settings?tab=templates', text: 'settings templates 任務 階段模板 專案類型' },
   { title: '報價與合約', subtitle: '設定', to: '/settings?tab=contracts', text: 'settings 合約模板 報價方 匯款 contract' },
   { title: '匯出／匯入', subtitle: '設定', to: '/settings?tab=backup', text: 'settings 備份 還原 backup restore export import json' },
   { title: '安全與版本', subtitle: '設定', to: '/settings?tab=security', text: 'settings security version 版本' },
@@ -46,7 +46,7 @@ const ICONS: Record<SearchGroup, LucideIcon> = {
   客戶: Users,
   報價單: FileText,
   人脈: BookUser,
-  收藏: Bookmark,
+  行程: CalendarClock,
   時間軸: CalendarRange,
   筆記: NotebookPen,
 }
@@ -86,7 +86,7 @@ function useEntries(open: boolean): { entries: Entry[]; loading: boolean } {
     for (const p of contacts.data ?? [])
       out.push({ key: `contact:${p.id}`, group: '人脈', title: p.name, subtitle: [p.company, p.job_title].filter(Boolean).join('・'), text: [p.email, p.phone, p.instagram, p.website, p.referrer_name, p.note].filter(Boolean).join(' '), to: `/contacts?edit=${p.id}` })
     for (const c of collections.data ?? [])
-      out.push({ key: `collection:${c.id}`, group: '收藏', title: c.name, subtitle: [label(c.type_id), c.organizer, c.city].filter(Boolean).join('・'), text: [c.country, c.note, c.requirements, c.url].filter(Boolean).join(' '), to: `/collections?edit=${c.id}` })
+      out.push({ key: `collection:${c.id}`, group: '行程', title: c.name, subtitle: [label(c.type_id), c.organizer, c.city].filter(Boolean).join('・'), text: [c.country, c.note, c.requirements, c.url].filter(Boolean).join(' '), to: `/collections?edit=${c.id}` })
     for (const t of extras.data?.timeline ?? [])
       out.push({ key: `timeline:${t.id}`, group: '時間軸', title: t.title, subtitle: `${formatDate(t.item_date)}${t.is_done ? '・已完成' : ''}`, text: t.content ?? '', timeline: t })
     for (const n of extras.data?.projectNotes ?? []) {

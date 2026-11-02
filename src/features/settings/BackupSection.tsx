@@ -77,7 +77,7 @@ function ExportCard() {
   return (
     <Card title="匯出備份">
       <p className="-mt-2 mb-4 text-sm text-text-2">
-        把所有資料（時間軸、專案、收藏、客戶、人脈、報價單、合約、選項、模板、設定）存成一個 JSON 檔。建議定期備份，並存放在雲端硬碟。
+        把所有資料（時間軸、專案、行程、客戶、人脈、報價單、合約、選項、模板、設定）存成一個 JSON 檔。建議定期備份，並存放在雲端硬碟。
       </p>
       <Checkbox label="包含附件檔案（檔案會變大）" checked={withFiles} onChange={(e) => setWithFiles(e.target.checked)} disabled={Boolean(busy)} />
       <div className="mt-5 flex flex-wrap items-center gap-4">

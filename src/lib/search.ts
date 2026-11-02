@@ -7,7 +7,7 @@ export function matchesAll(haystack: string, query: string): boolean {
 
 /* ---------------- 全域搜尋（Ctrl／⌘ + K） ---------------- */
 
-export const SEARCH_GROUPS = ['頁面', '專案', '客戶', '報價單', '人脈', '收藏', '時間軸', '筆記'] as const
+export const SEARCH_GROUPS = ['頁面', '專案', '客戶', '報價單', '人脈', '行程', '時間軸', '筆記'] as const
 export type SearchGroup = (typeof SEARCH_GROUPS)[number]
 
 export interface SearchEntry {

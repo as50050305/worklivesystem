@@ -8,6 +8,7 @@ import { cn } from '@/lib/cn'
 import { ANCHOR_LABEL, describeOffset } from '@/lib/projects'
 import { useOnline } from '@/pwa/useOnline'
 import { OrderedListEditor } from './OrderedListEditor'
+import { ProjectTypesEditor } from './ProjectTypesEditor'
 
 const ANCHORS = Object.keys(ANCHOR_LABEL) as AnchorKind[]
 
@@ -106,7 +107,7 @@ export function TemplatesSection() {
   const types = useOptionSet('project_type')
   const [typeId, setTypeId] = useState<string>('')
   useEffect(() => {
-    if (!typeId && types.items[0]) setTypeId(types.items[0].id)
+    if ((!typeId || !types.items.some((t) => t.id === typeId)) && types.items[0]) setTypeId(types.items[0].id)
   }, [types.items, typeId])
   const stagesQ = useStageTemplates()
   const tasksQ = useTemplateTasks()
@@ -116,7 +117,12 @@ export function TemplatesSection() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-2" role="group" aria-label="專案類型">
+      <Card title="專案類型">
+        <p className="-mt-2 mb-4 text-sm text-text-2">可新增、改名、排序、刪除（包含預設類型）。每個類型有自己的階段與錨點任務，在下方選擇類型後設定。</p>
+        <ProjectTypesEditor />
+      </Card>
+      <div className="flex flex-wrap items-center gap-2" role="group" aria-label="專案類型">
+        <span className="mr-1 text-sm text-text-2">設定階段：</span>
         {types.items.map((t) => (
           <button key={t.id} type="button" aria-pressed={t.id === typeId} onClick={() => setTypeId(t.id)} className={cn('chip', t.id === typeId && 'selected')}>
             {t.label}

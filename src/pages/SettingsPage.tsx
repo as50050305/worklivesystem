@@ -19,7 +19,7 @@ const TABS: { value: Tab; label: string }[] = [
   { value: 'tags', label: '顏色標籤' },
   { value: 'appearance', label: '外觀' },
   { value: 'options', label: '選項表' },
-  { value: 'templates', label: '階段模板' },
+  { value: 'templates', label: '專案類型與階段' },
   { value: 'contracts', label: '報價與合約' },
   { value: 'backup', label: '匯出／匯入' },
   { value: 'security', label: '安全與版本' },

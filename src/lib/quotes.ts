@@ -70,23 +70,83 @@ export function quoteNumber(clientCode: string | null | undefined, version: numb
 
 export const CONTRACT_VARIABLES = ['客戶名稱', '總額', '授權範圍', '修改次數', '交期', '訂金比例', '訂金金額', '報價版本', '報價單號', '我的名稱', '今天'] as const
 export type ContractVariable = (typeof CONTRACT_VARIABLES)[number]
+/** 變數名稱 → 值（內建變數與自訂變數共用） */
+export type VariableValues = Partial<Record<string, string>>
+
+const VAR_RE = /\{\{\s*([^{}\s]+)\s*\}\}/g
 
 /** 以 {{變數}} 取代；未提供的變數保留原樣，方便使用者看出缺什麼 */
-export function renderContract(template: string, values: Partial<Record<ContractVariable, string>>): string {
-  return template.replace(/\{\{\s*([^{}\s]+)\s*\}\}/g, (all, name: string) => {
-    const v = values[name as ContractVariable]
+export function renderContract(template: string, values: VariableValues): string {
+  return template.replace(VAR_RE, (all, name: string) => {
+    const v = values[name]
     return v === undefined || v === '' ? all : v
   })
 }
 
 /** 範本中尚未有值的變數（預覽時提示） */
-export function missingVariables(template: string, values: Partial<Record<ContractVariable, string>>): string[] {
+export function missingVariables(template: string, values: VariableValues): string[] {
   const out = new Set<string>()
-  for (const m of template.matchAll(/\{\{\s*([^{}\s]+)\s*\}\}/g)) {
-    const v = values[m[1] as ContractVariable]
+  for (const m of template.matchAll(VAR_RE)) {
+    const v = values[m[1]!]
     if (v === undefined || v === '') out.add(m[1]!)
   }
   return [...out]
+}
+
+/** 文字中出現的變數名稱（依出現順序、不重複） */
+export function variablesIn(text: string): string[] {
+  return [...new Set([...text.matchAll(VAR_RE)].map((m) => m[1]!))]
+}
+
+/* ---------------- 自訂合約變數 ---------------- */
+
+/** 使用者自訂的合約變數（存在 app_settings.preferences.contract_variables） */
+export interface CustomVariable {
+  name: string
+  /** 預設值；產生合約時可再修改 */
+  value: string
+}
+
+export function customVariablesFrom(preferences: Record<string, unknown> | null | undefined): CustomVariable[] {
+  const raw = preferences?.contract_variables
+  if (!Array.isArray(raw)) return []
+  const seen = new Set<string>(CONTRACT_VARIABLES)
+  const out: CustomVariable[] = []
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') continue
+    const name = String((r as { name?: unknown }).name ?? '').trim()
+    if (!name || seen.has(name) || variableNameError(name, [])) continue
+    seen.add(name)
+    out.push({ name, value: String((r as { value?: unknown }).value ?? '') })
+  }
+  return out
+}
+
+/** 變數名稱檢查：回傳錯誤訊息，沒問題回傳 null */
+export function variableNameError(name: string, existing: string[]): string | null {
+  const n = name.trim()
+  if (!n) return '請輸入變數名稱'
+  if (/[{}\s]/.test(n)) return '變數名稱不可包含空白或大括號'
+  if (n.length > 30) return '變數名稱最多 30 個字'
+  if ((CONTRACT_VARIABLES as readonly string[]).includes(n)) return `「${n}」是內建變數`
+  if (existing.includes(n)) return `已有「${n}」這個變數`
+  return null
+}
+
+/** 把文字中的 {{舊名稱}} 改成 {{新名稱}}（變數改名時同步更新模板） */
+export function renameVariableIn(text: string, from: string, to: string): string {
+  return text.replace(VAR_RE, (all, name: string) => (name === from ? `{{${to}}}` : all))
+}
+
+/**
+ * 合約實際使用的變數值：內建（由報價單自動產生）→ 自訂變數預設值 → 這份合約手動修改的值
+ * overrides 中有的鍵一律以手動值為準（空字串＝刻意留空，保留 {{變數}} 讓使用者看見）
+ */
+export function mergeVariableValues(auto: VariableValues, custom: CustomVariable[], overrides: Record<string, string>): VariableValues {
+  const out: VariableValues = { ...auto }
+  for (const c of custom) if (c.value !== '') out[c.name] = c.value
+  for (const [k, v] of Object.entries(overrides)) out[k] = v
+  return out
 }
 
 /* ---------------- 規則 A-7 ---------------- */

@@ -1,5 +1,5 @@
 /**
- * 收藏庫（純函式）
+ * 預定行程（純函式）
  * - 規則 B：轉為專案／轉為客戶的帶入內容
  * - 明年提醒的預設日期
  * - 表格排序
@@ -32,7 +32,7 @@ export interface OptionLike {
   label: string
 }
 
-/** 收藏類型 → 對應的專案類型（依系統鍵：展會、駐村、補助／計畫） */
+/** 行程類型 → 對應的專案類型（依系統鍵：展會、駐村、補助／計畫） */
 export function mapToProjectType(collectionType: OptionLike | undefined, projectTypes: OptionLike[]): string | null {
   if (!collectionType?.key) return null
   return projectTypes.find((p) => p.key === collectionType.key)?.id ?? null
@@ -56,7 +56,7 @@ export interface ProjectDraft {
   cost: { item: string; amount: number; currency: string } | null
 }
 
-/** 規則 B：收藏 → 專案的預設帶入內容（預覽時仍可修改） */
+/** 規則 B：行程 → 專案的預設帶入內容（預覽時仍可修改） */
 export function draftProjectFromCollection(c: CollectionLike, projectTypeId: string | null): ProjectDraft {
   const fee = c.fee_amount === null || c.fee_amount === '' ? null : Number(c.fee_amount)
   return {
@@ -78,7 +78,7 @@ export interface ClientDraft {
   website: string | null
 }
 
-/** 規則 B：收藏 → 客戶（僅限潛在客戶品牌），帶入名稱與網址 */
+/** 規則 B：行程 → 客戶（僅限潛在客戶品牌），帶入名稱與網址 */
 export function draftClientFromCollection(c: CollectionLike): ClientDraft {
   return { name: c.name, website: c.url }
 }
@@ -99,6 +99,14 @@ export function defaultRemindDate(c: Pick<CollectionLike, 'apply_start_on' | 'ap
 /** 明年提醒是否到期 */
 export function isReminderDue(c: Pick<CollectionLike, 'remind_next_year' | 'remind_on'>, today: PlainDate): boolean {
   return c.remind_next_year && c.remind_on !== null && c.remind_on <= today
+}
+
+/** 尚未到期、已排定的明年提醒（依提醒日由近到遠），讓側邊欄能顯示「之後會提醒」 */
+export function upcomingReminders<T extends Pick<CollectionLike, 'remind_next_year' | 'remind_on'>>(list: T[], today: PlainDate, limit = 3): T[] {
+  return list
+    .filter((c) => c.remind_next_year && c.remind_on !== null && c.remind_on > today)
+    .sort((a, b) => (a.remind_on! < b.remind_on! ? -1 : a.remind_on! > b.remind_on! ? 1 : 0))
+    .slice(0, limit)
 }
 
 export type SortKey = 'name' | 'type' | 'apply_deadline_on' | 'event_start_on' | 'status' | 'updated_at'

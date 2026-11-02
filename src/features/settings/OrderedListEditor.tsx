@@ -48,6 +48,7 @@ export function OrderedListEditor({
   addPlaceholder = '新增項目',
   deleteHint,
   numbered,
+  onRequestDelete,
 }: {
   rows: ListRow[]
   onRename: (id: string, label: string) => void
@@ -57,6 +58,8 @@ export function OrderedListEditor({
   addPlaceholder?: string
   deleteHint?: string
   numbered?: boolean
+  /** 自行處理刪除確認（例如需要額外選項的刪除對話框）；提供時不使用內建確認框 */
+  onRequestDelete?: (row: ListRow) => void
 }) {
   const online = useOnline()
   const [draft, setDraft] = useState('')
@@ -77,7 +80,7 @@ export function OrderedListEditor({
     <div>
       <ul>
         {rows.map((r, i) => (
-          <Row key={r.id} row={r} index={i} total={rows.length} numbered={numbered} onRename={(l) => onRename(r.id, l)} onMove={(d) => move(i, d)} onDelete={() => setToDelete(r)} />
+          <Row key={r.id} row={r} index={i} total={rows.length} numbered={numbered} onRename={(l) => onRename(r.id, l)} onMove={(d) => move(i, d)} onDelete={() => (onRequestDelete ? onRequestDelete(r) : setToDelete(r))} />
         ))}
         {!rows.length && <li className="py-2 text-sm text-text-3">尚無項目</li>}
       </ul>

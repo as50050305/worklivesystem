@@ -12,7 +12,7 @@ import type { ChecklistItem } from '@/data/types'
 import { ItemCard } from '@/features/timeline/ItemCard'
 import { cn } from '@/lib/cn'
 import { diffDays, formatDate } from '@/lib/dates'
-import { isReminderDue } from '@/lib/collections'
+import { isReminderDue, upcomingReminders } from '@/lib/collections'
 import { isDueToday } from '@/lib/followup'
 import { lifeTodos, nearestCountdowns, todaySchedule } from '@/lib/sidebar'
 import { useToday } from '@/lib/useToday'
@@ -122,6 +122,8 @@ export function SidebarSections() {
   const recontact = clients.filter((c) => fkey(c.followup_status_id) === 'recontact')
   const noShow = clients.filter((c) => c.no_show_pending)
   const reminders = (collectionsQ.data ?? []).filter((c) => isReminderDue(c, today)).sort((a, b) => ((a.remind_on ?? '') < (b.remind_on ?? '') ? -1 : 1))
+  const scheduled = (collectionsQ.data ?? []).filter((c) => c.remind_next_year && c.remind_on !== null && c.remind_on > today)
+  const upcoming = upcomingReminders(scheduled, today, 3)
 
   const quickAdd = (title: string, tagId: string | null | undefined) =>
     create.mutateAsync({
@@ -280,6 +282,21 @@ export function SidebarSections() {
           </ul>
         ) : (
           <p className="text-sm text-text-3">沒有到期的明年提醒</p>
+        )}
+        {upcoming.length > 0 && (
+          <div className="mt-2">
+            <p className="text-[11px] text-text-3">已排定 {scheduled.length} 筆，到提醒日會出現在上面：</p>
+            <ul aria-label="已排定的明年提醒" className="mt-1 space-y-0.5">
+              {upcoming.map((c) => (
+                <li key={c.id}>
+                  <Link to={`/collections?edit=${c.id}`} className="flex items-center gap-2 rounded-lg px-1 py-0.5 text-[12px] text-text-2 hover:bg-surface-2 hover:text-text">
+                    <span className="min-w-0 flex-1 truncate">{c.name}</span>
+                    <span className="tabular flex-none font-mono text-[11px] text-text-3">{formatDate(c.remind_on)}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </Section>
     </>

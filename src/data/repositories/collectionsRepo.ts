@@ -46,7 +46,7 @@ export const collectionsRepo = {
 
   /**
    * 規則 B：轉為專案。建立專案（含網址、費用成本、模板任務），
-   * 原收藏保留，狀態改為「已轉換」並記錄專案 ID。
+   * 原行程保留，狀態改為「已轉換」並記錄專案 ID。
    */
   async toProject(a: ToProjectArgs): Promise<{ project: Project; tasks: number }> {
     const project = await projectsRepo.create({ ...a.project, source_collection_id: a.collection.id })

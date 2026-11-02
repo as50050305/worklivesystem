@@ -1,9 +1,9 @@
-import { Download, RefreshCw, Save } from 'lucide-react'
+import { Download, RefreshCw, RotateCcw, Save, Wand2 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, Button, Input, Select, Tabs } from '@/components/ui'
-import { useBusinessProfile, useContractMutations, useContractTemplates } from '@/data/quoteHooks'
+import { useBusinessProfile, useContractMutations, useContractTemplates, useCustomVariables } from '@/data/quoteHooks'
 import type { Client, Contract, Quote, QuoteLine } from '@/data/types'
-import { contractValues, missingVariables, quoteTotals, renderContract } from '@/lib/quotes'
+import { CONTRACT_VARIABLES, contractValues, mergeVariableValues, missingVariables, quoteTotals, renderContract, variablesIn } from '@/lib/quotes'
 import { useToday } from '@/lib/useToday'
 import { useOnline } from '@/pwa/useOnline'
 import { quoteNo } from './shared'
@@ -25,6 +25,7 @@ export function ContractEditor({ quote, client, lines, contract, onClose, onDown
   const today = useToday()
   const templates = useContractTemplates()
   const { profile } = useBusinessProfile()
+  const { variables: custom } = useCustomVariables()
   const m = useContractMutations()
   const [saved, setSaved] = useState<Contract | null>(contract)
   const [templateId, setTemplateId] = useState<string>(contract?.template_id ?? '')
@@ -34,6 +35,8 @@ export function ContractEditor({ quote, client, lines, contract, onClose, onDown
   const [view, setView] = useState<'edit' | 'preview'>('edit')
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
+  /** 這份合約手動修改的變數值（只影響這份合約） */
+  const [overrides, setOverrides] = useState<Record<string, string>>({})
 
   useEffect(() => {
     const d = ref.current
@@ -41,7 +44,7 @@ export function ContractEditor({ quote, client, lines, contract, onClose, onDown
   }, [])
 
   const number = quoteNo(quote, client)
-  const values = useMemo(() => {
+  const auto = useMemo(() => {
     const t = quoteTotals(quote, lines)
     return contractValues({
       clientName: client?.name ?? null,
@@ -58,6 +61,7 @@ export function ContractEditor({ quote, client, lines, contract, onClose, onDown
       today,
     })
   }, [quote, lines, client, number, profile.name, today])
+  const values = useMemo(() => mergeVariableValues(auto, custom, overrides), [auto, custom, overrides])
 
   const apply = (id: string) => {
     const t = templates.data?.find((x) => x.id === id)
@@ -68,6 +72,23 @@ export function ContractEditor({ quote, client, lines, contract, onClose, onDown
     setDirty(true)
   }
 
+  /** 只把目前內文中還沒代入的 {{變數}} 換成值，保留已手動修改的文字 */
+  const fillBody = () => {
+    const next = renderContract(body, values)
+    if (next !== body) {
+      setBody(next)
+      setDirty(true)
+    }
+  }
+
+  const template = templates.data?.find((x) => x.id === templateId)
+  const varNames = useMemo(
+    () => [...new Set<string>([...CONTRACT_VARIABLES, ...custom.map((c) => c.name), ...variablesIn(template?.body ?? ''), ...variablesIn(body)])],
+    [custom, template?.body, body],
+  )
+  const customNames = new Set(custom.map((c) => c.name))
+  const defaultOf = (name: string) => mergeVariableValues(auto, custom, {})[name] ?? ''
+
   // 新合約：模板載入後自動套用預設模板
   useEffect(() => {
     if (contract || templateId || !templates.data?.length) return
@@ -77,6 +98,7 @@ export function ContractEditor({ quote, client, lines, contract, onClose, onDown
   }, [templates.data])
 
   const missing = missingVariables(body, {})
+  const [varsOpen, setVarsOpen] = useState(false)
 
   const save = async (): Promise<Contract | null> => {
     if (!title.trim()) {
@@ -148,9 +170,64 @@ export function ContractEditor({ quote, client, lines, contract, onClose, onDown
           </Button>
         </div>
 
+        <details
+          className="card-inset mt-4 p-0"
+          open={varsOpen || missing.length > 0}
+          onToggle={(e) => setVarsOpen((e.target as HTMLDetailsElement).open)}
+        >
+          <summary className="cursor-pointer select-none px-4 py-3 text-sm font-medium">
+            變數值 <span className="ml-1 text-xs font-normal text-text-2">可修改這份合約要代入的值，改完按「代入內文」或「套用模板」</span>
+          </summary>
+          <div className="border-t border-dashed border-line-soft px-4 pb-4 pt-3">
+            <ul aria-label="變數值" className="grid gap-x-4 gap-y-2 sm:grid-cols-2">
+              {varNames.map((name) => {
+                const overridden = Object.hasOwn(overrides, name)
+                const current = overridden ? overrides[name]! : defaultOf(name)
+                return (
+                  <li key={name} className="flex min-w-0 items-center gap-2">
+                    <label className="w-28 flex-none truncate font-mono text-[12px] text-text-2" htmlFor={`var-${name}`} title={`{{${name}}}`}>
+                      {name}
+                      {customNames.has(name) && <span className="ml-1 text-[10px] text-primary-ink">自訂</span>}
+                      {!customNames.has(name) && !(CONTRACT_VARIABLES as readonly string[]).includes(name) && <span className="ml-1 text-[10px] text-warning">未定義</span>}
+                    </label>
+                    <input
+                      id={`var-${name}`}
+                      className="input h-9 min-w-0 flex-1 text-sm"
+                      value={current}
+                      placeholder="（沒有資料）"
+                      onChange={(e) => setOverrides((o) => ({ ...o, [name]: e.target.value }))}
+                    />
+                    <button
+                      type="button"
+                      className="flex-none rounded-lg p-1.5 text-text-3 hover:bg-surface-2 hover:text-text disabled:invisible"
+                      disabled={!overridden}
+                      aria-label={`還原 ${name} 的值`}
+                      title="還原為自動帶入的值"
+                      onClick={() =>
+                        setOverrides((o) => {
+                          const { [name]: _, ...rest } = o
+                          return rest
+                        })
+                      }
+                    >
+                      <RotateCcw size={13} />
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+            <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
+              <span className="mr-auto text-xs text-text-2">要新增常用變數，請到 設定 → 報價與合約 →「自訂變數」。</span>
+              <Button size="sm" icon={<Wand2 size={14} />} onClick={fillBody} title="把內文中還沒代入的 {{變數}} 換成上面的值，不影響已修改的文字">
+                代入內文
+              </Button>
+            </div>
+          </div>
+        </details>
+
         {missing.length > 0 && (
           <Alert tone="warning" className="mt-4">
-            尚未代入：{missing.map((v) => `{{${v}}}`).join('、')}。可到報價單「條款」或 設定 → 報價與合約 補資料後按「套用模板」，或直接修改內文。
+            尚未代入：{missing.map((v) => `{{${v}}}`).join('、')}。可在上方「變數值」填入後按「代入內文」，或直接修改內文。
           </Alert>
         )}
 

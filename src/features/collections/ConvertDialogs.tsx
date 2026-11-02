@@ -1,7 +1,7 @@
 import { CheckCircle2 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Alert, Button, Checkbox, DatePicker, Input, Select } from '@/components/ui'
+import { Alert, Button, Checkbox, DatePicker, Input } from '@/components/ui'
 import { useCollectionMutations } from '@/data/collectionHooks'
 import { stagesOf, useOptionSet, useStageTemplates, useTemplateTasks } from '@/data/projectHooks'
 import type { ClientRow, Collection } from '@/data/types'
@@ -9,6 +9,7 @@ import { draftClientFromCollection, draftProjectFromCollection, mapToProjectType
 import { planTemplateTasks, progressFromStage } from '@/lib/projects'
 import { useOnline } from '@/pwa/useOnline'
 import { TagPicker } from '../timeline/TagPicker'
+import { TypeSelect } from '../projects/TypeSelect'
 
 function Shell({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null)
@@ -104,11 +105,11 @@ export function ConvertToProjectDialog({ collection, onClose }: { collection: Co
       <Shell title="已轉為專案" onClose={onClose}>
         <Alert tone="success" className="mt-4">
           已建立專案「{d.name}」，並產生 {done.tasks} 筆時間軸任務
-          {genTasks && plan.skippedNoAnchor.length > 0 && `（略過 ${plan.skippedNoAnchor.length} 筆：錨點日期未填）`}。原收藏已標記為「已轉換」。
+          {genTasks && plan.skippedNoAnchor.length > 0 && `（略過 ${plan.skippedNoAnchor.length} 筆：錨點日期未填）`}。原行程已標記為「已轉換」。
         </Alert>
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="ghost" onClick={onClose}>
-            留在收藏庫
+            留在預定行程
           </Button>
           <Link to={`/projects/${done.id}`} onClick={onClose} className="btn btn-primary btn-bracket">
             開啟專案
@@ -120,17 +121,10 @@ export function ConvertToProjectDialog({ collection, onClose }: { collection: Co
 
   return (
     <Shell title="轉為專案" onClose={onClose}>
-      <p className="mb-5 text-sm text-text-2">確認要帶入的內容，可以先修改再建立。原收藏會保留，狀態改為「已轉換」。</p>
+      <p className="mb-5 text-sm text-text-2">確認要帶入的內容，可以先修改再建立。原行程會保留，狀態改為「已轉換」。</p>
       <form onSubmit={submit} className="space-y-4">
         <Input label="專案名稱" value={d.name} onChange={(e) => set('name', e.target.value)} />
-        <Select label="專案類型" value={d.type_id ?? ''} onChange={(e) => set('type_id', e.target.value || null)} help={!mapped ? '這個收藏類型沒有對應的專案類型，請手動選擇' : '依收藏類型自動對應，決定套用哪一組階段模板'}>
-          <option value="">請選擇</option>
-          {projectTypes.items.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.label}
-            </option>
-          ))}
-        </Select>
+        <TypeSelect label="專案類型" value={d.type_id ?? ''} emptyLabel="請選擇" onChange={(id) => set('type_id', id || null)} help={!mapped ? '這個行程類型沒有對應的專案類型，請手動選擇' : '依行程類型自動對應，決定套用哪一組階段模板'} />
         <div className="grid gap-4 sm:grid-cols-2">
           <DatePicker label="開始申請日" value={d.apply_start_on} allowEmpty onChange={(v) => set('apply_start_on', v)} />
           <DatePicker label="申請截止日" value={d.apply_deadline_on} allowEmpty onChange={(v) => set('apply_deadline_on', v)} />
@@ -237,7 +231,7 @@ export function ConvertToClientDialog({ collection, onClose }: { collection: Col
 
   return (
     <Shell title="轉為客戶" onClose={onClose}>
-      <p className="mb-5 text-sm text-text-2">帶入品牌名稱與網址建立客戶（編號自動產生）。原收藏會保留，狀態改為「已轉換」。</p>
+      <p className="mb-5 text-sm text-text-2">帶入品牌名稱與網址建立客戶（編號自動產生）。原行程會保留，狀態改為「已轉換」。</p>
       <form onSubmit={submit} className="space-y-4">
         <Input label="品牌名稱" value={name} onChange={(e) => setName(e.target.value)} />
         <Input label="網址" value={website} onChange={(e) => setWebsite(e.target.value)} />

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { businessFrom, type BusinessProfileLike } from '@/lib/quotes'
+import { businessFrom, customVariablesFrom, renameVariableIn, type BusinessProfileLike, type CustomVariable } from '@/lib/quotes'
 import { idOf } from './clientRules'
 import { useOptions } from './projectHooks'
 import { invalidateTable } from './queryClient'
@@ -41,6 +41,35 @@ export function useBusinessMutation() {
   return useMutation({
     mutationFn: (b: BusinessProfileLike) => settingsRepo.mergePreferences({ business: b }),
     onSettled: () => invalidateTable('app_settings'),
+  })
+}
+
+/** 自訂合約變數 */
+export function useCustomVariables(): { variables: CustomVariable[]; isLoading: boolean } {
+  const q = useAppSettings()
+  return { variables: customVariablesFrom(q.data?.preferences), isLoading: q.isLoading }
+}
+
+/**
+ * 儲存自訂變數清單；rename 時一併把所有合約模板中的 {{舊名稱}} 改成 {{新名稱}}
+ * （已產生的合約內文是最終文字，不會更動）
+ */
+export function useCustomVariablesMutation() {
+  return useMutation({
+    mutationFn: async (v: { variables: CustomVariable[]; rename?: { from: string; to: string } }) => {
+      await settingsRepo.mergePreferences({ contract_variables: v.variables })
+      if (v.rename) {
+        const { from, to } = v.rename
+        for (const t of await quotesRepo.listTemplates()) {
+          const body = renameVariableIn(t.body, from, to)
+          if (body !== t.body) await quotesRepo.updateTemplate(t.id, { body })
+        }
+      }
+    },
+    onSettled: () => {
+      invalidateTable('app_settings')
+      invalidateTable('contract_templates')
+    },
   })
 }
 

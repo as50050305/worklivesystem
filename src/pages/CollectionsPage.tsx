@@ -134,11 +134,11 @@ export function CollectionsPage() {
   return (
     <>
       <PageHeader
-        title="收藏庫"
+        title="預定行程"
         eyebrow="Collections"
         actions={
           <Button variant="primary" bracket icon={<Plus size={16} strokeWidth={2} />} disabled={!online} onClick={() => set('new', '1')}>
-            新增收藏
+            新增行程
           </Button>
         }
       >
@@ -148,7 +148,7 @@ export function CollectionsPage() {
       <div className="mb-5 flex flex-wrap items-end gap-3">
         <div className="relative min-w-56 flex-1">
           <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-3" />
-          <input className="input pl-10" placeholder="搜尋名稱、主辦、地點、筆記…" aria-label="搜尋收藏" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input className="input pl-10" placeholder="搜尋名稱、主辦、地點、筆記…" aria-label="搜尋行程" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <Select aria-label="類型" value={typeFilter} onChange={(e) => set('type', e.target.value)} wrapperClassName="w-44">
           <option value="">全部類型</option>
@@ -187,10 +187,10 @@ export function CollectionsPage() {
         ) : list.length === 0 ? (
           <EmptyState
             illustration={<PlantIllustration />}
-            title={q.data?.length ? '沒有符合的收藏' : '還沒有收藏'}
+            title={q.data?.length ? '沒有符合的行程' : '還沒有行程'}
             action={
               <Button variant="primary" size="sm" icon={<Plus size={14} />} onClick={() => set('new', '1')} disabled={!online}>
-                新增收藏
+                新增行程
               </Button>
             }
           />

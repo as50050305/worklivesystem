@@ -35,7 +35,8 @@ export async function syncQuoteWon(quote: Quote, options: OptionItem[]): Promise
   }
 
   const lines = await quotesRepo.listLines(quote.id)
-  const typeId = idOf(options, 'project_type', 'commercial')
+  // 預設類型「商業插畫案」被刪除時，改用排在第一個的專案類型
+  const typeId = idOf(options, 'project_type', 'commercial') ?? options.filter((o) => o.category === 'project_type').sort((a, b) => a.sort_order - b.sort_order)[0]?.id ?? null
   const stages = (await templatesRepo.listStages()).filter((s) => s.project_type_id === typeId).sort((a, b) => a.sort_order - b.sort_order)
   const first = stages[0]?.id ?? null
   const brand = client?.name ?? quote.title ?? '成交報價'

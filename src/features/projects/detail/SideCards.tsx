@@ -356,11 +356,11 @@ export function RelationsCard({ project }: { project: Project }) {
     <Card title="關聯">
       <dl className="space-y-3 text-sm">
         <div className="flex items-center justify-between gap-3">
-          <dt className="text-text-2">來源收藏</dt>
+          <dt className="text-text-2">來源行程</dt>
           <dd>
             {project.source_collection_id ? (
               <Link to={`/collections?edit=${project.source_collection_id}`} className="inline-flex items-center gap-1 underline decoration-dotted underline-offset-4">
-                查看收藏 <ExternalLink size={12} />
+                查看行程 <ExternalLink size={12} />
               </Link>
             ) : (
               <span className="text-text-3">—</span>

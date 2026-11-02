@@ -105,7 +105,7 @@ export function ClientsPage() {
       ) : !q.data?.length ? (
         <Card>
           <EmptyState illustration={<BoxIllustration />} title="還沒有客戶" action={<Button variant="primary" size="sm" icon={<Plus size={14} />} onClick={() => setCreating(true)} disabled={!online}>新增客戶</Button>}>
-            也可以從收藏庫把「潛在客戶品牌」轉為客戶。
+            也可以從預定行程把「潛在客戶品牌」轉為客戶。
           </EmptyState>
         </Card>
       ) : view === 'board' ? (

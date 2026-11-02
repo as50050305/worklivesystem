@@ -64,7 +64,8 @@ export const backupRepo = {
 
   async currentProtected() {
     const sb = getSupabase()
-    const { data: opts, error: e1 } = await sb.from('option_items').select('id,category,key').not('key', 'is', null)
+    // 專案類型可以刪除（2026/11/02 起），還原時會跟一般資料一起清掉再插入，不算受保護的列
+    const { data: opts, error: e1 } = await sb.from('option_items').select('id,category,key').not('key', 'is', null).neq('category', 'project_type')
     if (e1) throw e1
     const { data: tag, error: e2 } = await sb.from('color_tags').select('id').eq('is_default', true).maybeSingle()
     if (e2) throw e2

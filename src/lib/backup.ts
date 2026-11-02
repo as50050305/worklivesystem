@@ -2,7 +2,7 @@
  * 備份（JSON 全量匯出／匯入）的純函式
  * - 匯出：每張表的所有資料列（不含 user_id，匯入時由資料庫自動帶入）
  * - 匯入＝還原：以備份「取代」目前全部資料
- *   - 系統選項（有 key）與預設顏色標籤受資料庫保護、不能刪除，因此用「對應到現有那一筆再更新」處理，
+ *   - 系統選項（有 key，專案類型除外）與預設顏色標籤受資料庫保護、不能刪除，因此用「對應到現有那一筆再更新」處理，
  *     其他表引用它們的欄位一併改寫成現有的 ID
  *   - 循環／自我參照欄位（例如專案 ↔ 報價單）第一輪先填 null，第二輪再補上
  */
@@ -53,7 +53,7 @@ export const TABLE_LABELS: Record<BackupTable, string> = {
   client_followups: '追蹤紀錄',
   client_meetings: '會議',
   client_notes: '客戶速記',
-  collections: '收藏',
+  collections: '行程',
   projects: '專案',
   project_notes: '專案筆記',
   project_costs: '專案成本',
