@@ -1,6 +1,8 @@
 @import '@fontsource-variable/space-grotesk';
 @import '@fontsource-variable/jetbrains-mono';
 @import '@fontsource-variable/noto-sans-tc';
+/* 特黑明體：只有「初號機配色」系列會用到（沒用到就不會下載） */
+@import '@fontsource/noto-serif-tc/900.css';
 @import 'tailwindcss';
 @import './styles/tokens.css';
 @import './styles/series-eva.css';

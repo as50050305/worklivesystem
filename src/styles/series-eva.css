@@ -1,7 +1,8 @@
 /* =====================================================================
    UI 系列：初號機配色（<html data-series="eva">）
    - 紫色機體 × 螢光綠 × 警示橘；與 data-theme（深色／淺色）並存
-   - 只覆寫顏色 token、圓角與少量裝飾，元件結構不變；關閉後完全回到原本的樣子
+   - 只覆寫顏色 token、圓角、字體與裝飾，元件結構不變；關閉後完全回到原本的樣子
+   - 元件造型走「警告標示」風：直角色塊、特黑明體（Noto Serif TC 900）、斜紋端蓋
    - 對比已用 scripts/check-contrast.mjs 驗證（WCAG AA）
    ===================================================================== */
 
@@ -47,12 +48,16 @@
   --eva-stripe-a: #ff9d3c;
   --eva-stripe-b: #120e1a;
 
-  /* 稜角感：圓角收小 */
-  --r-sm: 4px;
-  --r-md: 6px;
-  --r-lg: 8px;
-  --r-xl: 10px;
-  --r-2xl: 12px;
+  --c-on-danger: #1a0806;
+
+  /* 警告標示風：直角、特黑明體 */
+  --r-xs: 0px;
+  --r-sm: 0px;
+  --r-md: 0px;
+  --r-lg: 2px;
+  --r-xl: 2px;
+  --r-2xl: 3px;
+  --ff-display: 'Noto Serif TC', 'Songti TC', 'Yu Mincho', 'PMingLiU', serif;
 }
 
 :root[data-series='eva'][data-theme='light'] {
@@ -95,6 +100,7 @@
 
   --eva-stripe-a: #ff9d3c;
   --eva-stripe-b: #2c1f4a;
+  --c-on-danger: #ffffff;
 }
 
 /* 頁首下緣的警示斜紋、徽章：只有這個系列會顯示 */
@@ -112,19 +118,153 @@
 }
 
 @layer components {
-  /* 按鈕、Chip、徽章改成切角矩形 */
-  :root[data-series='eva'] .btn,
-  :root[data-series='eva'] .chip,
-  :root[data-series='eva'] .badge {
-    border-radius: var(--r-sm);
+  /* ---------- 按鈕：直角色塊＋特黑明體 ---------- */
+  :root[data-series='eva'] .btn {
+    border-radius: 0;
+    border-width: 2px;
+    font-family: var(--ff-display);
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
   }
+  :root[data-series='eva'] .btn-sm { font-size: 13px; letter-spacing: 0.1em; }
+  :root[data-series='eva'] .btn-lg { font-size: 16px; }
+  /* 主要操作（原本的 [ ] 括號）：兩端換成斜紋端蓋 */
+  :root[data-series='eva'] .btn-bracket {
+    padding: 0;
+    gap: 12px;
+  }
+  :root[data-series='eva'] .btn-bracket::before,
+  :root[data-series='eva'] .btn-bracket::after {
+    content: '';
+    align-self: stretch;
+    width: 16px;
+    opacity: 1;
+    background-image: repeating-linear-gradient(-45deg, currentColor 0 3px, transparent 3px 7px);
+  }
+  :root[data-series='eva'] .btn-bracket.btn-sm { gap: 9px; }
+  :root[data-series='eva'] .btn-bracket.btn-sm::before,
+  :root[data-series='eva'] .btn-bracket.btn-sm::after { width: 11px; }
+  /* 危險操作：實心紅色警示塊 */
+  :root[data-series='eva'] .btn-danger {
+    background: var(--c-danger);
+    color: var(--c-on-danger);
+  }
+  :root[data-series='eva'] .btn-danger:hover:not(:disabled) { background: var(--c-danger); }
+  :root[data-series='eva'] .btn-danger.btn-icon {
+    background: transparent;
+    color: var(--c-danger);
+  }
+
+  /* ---------- Chip／徽章：標籤牌 ---------- */
+  :root[data-series='eva'] .chip {
+    border-radius: 0;
+    border-width: 1.5px;
+    font-family: var(--ff-display);
+    font-weight: 900;
+    letter-spacing: 0.08em;
+  }
+  :root[data-series='eva'] .badge {
+    height: 22px;
+    padding: 0 8px 0 0;
+    gap: 6px;
+    border-width: 1.5px;
+    border-radius: 0;
+    font-family: var(--ff-display);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+  }
+  :root[data-series='eva'] .badge::before {
+    content: '';
+    align-self: stretch;
+    width: 9px;
+    background-image: repeating-linear-gradient(-45deg, currentColor 0 2px, transparent 2px 5px);
+  }
+
+  /* ---------- 分頁籤：選取中的變成實心色塊 ---------- */
+  :root[data-series='eva'] .tabs {
+    gap: 4px;
+    border-bottom-width: 2px;
+  }
+  :root[data-series='eva'] .tab {
+    padding: 9px 14px 10px;
+    font-family: var(--ff-display);
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+  }
+  :root[data-series='eva'] .tab[aria-selected='true'],
+  :root[data-series='eva'] .tab.active {
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+    font-weight: 900;
+  }
+  :root[data-series='eva'] .tab[aria-selected='true']::after,
+  :root[data-series='eva'] .tab.active::after {
+    content: none;
+  }
+
+  /* ---------- 小標題、表頭 ---------- */
+  :root[data-series='eva'] .label-caps,
+  :root[data-series='eva'] .table th {
+    font-family: var(--ff-display);
+    font-weight: 900;
+    letter-spacing: 0.16em;
+  }
+  :root[data-series='eva'] .table th { font-size: 12px; }
+
+  /* ---------- 表單控制項 ---------- */
+  :root[data-series='eva'] .check { border-radius: 0; }
+  :root[data-series='eva'] .switch,
+  :root[data-series='eva'] .switch::after {
+    border-radius: 0;
+  }
+
+  /* ---------- 錯位陰影層：斜紋加粗 ---------- */
+  :root[data-series='eva'] .elev-1::before,
+  :root[data-series='eva'] .elev-2::before,
+  :root[data-series='eva'] .elev-3::before {
+    background-image: repeating-linear-gradient(-45deg, var(--c-hatch) 0 3px, transparent 3px 7px);
+  }
+
   /* 側邊欄時鐘：儀表板的螢光綠讀數（淺色時為深紫） */
   :root[data-series='eva'] .series-readout {
     color: var(--c-primary-ink);
   }
-  /* 頁面大標題前的色塊 */
-  :root[data-series='eva'] .series-title {
-    padding-left: 14px;
-    border-left: 6px solid var(--c-primary);
-  }
 }
+
+/* 以下不放在 layer 內：要蓋過元件上的 Tailwind 工具類別（字重、內距） */
+
+/* 頁面大標題：特黑明體，下方一段斜紋 */
+:root[data-series='eva'] .series-title {
+  padding-bottom: 18px;
+  font-family: var(--ff-display);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  background: repeating-linear-gradient(-45deg, var(--c-primary) 0 7px, transparent 7px 14px) left bottom / min(100%, 240px) 10px no-repeat;
+}
+
+/* 提醒框：危險／警告上下各一條斜紋；一般提示只加粗外框 */
+:root[data-series='eva'] .alert {
+  border-width: 2px;
+}
+:root[data-series='eva'] .alert[data-tone='danger'],
+:root[data-series='eva'] .alert[data-tone='warning'] {
+  position: relative;
+  padding-top: 22px;
+  padding-bottom: 22px;
+}
+:root[data-series='eva'] .alert[data-tone='danger']::before,
+:root[data-series='eva'] .alert[data-tone='danger']::after,
+:root[data-series='eva'] .alert[data-tone='warning']::before,
+:root[data-series='eva'] .alert[data-tone='warning']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 7px;
+  background-image: repeating-linear-gradient(-45deg, currentColor 0 5px, transparent 5px 10px);
+}
+:root[data-series='eva'] .alert[data-tone]::before { top: 0; }
+:root[data-series='eva'] .alert[data-tone]::after { bottom: 0; }
