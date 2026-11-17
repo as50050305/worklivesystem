@@ -10,8 +10,8 @@ export function SeriesEmblem({ size = 46, className }: { size?: number; classNam
         <polygon points="28,3 50,15.5 50,40.5 28,53 6,40.5 6,15.5" fill="var(--c-surface-3)" stroke="var(--c-line)" strokeWidth="1.5" strokeLinejoin="round" />
         {/* 內框：上半以主色描邊，右上角留缺口 */}
         <polyline points="10.5,35 10.5,18 28,8 38,13.7" fill="none" stroke="var(--c-primary-ink)" strokeWidth="1.5" strokeLinecap="square" />
-        {/* 右上角的警示色切角 */}
-        <polygon points="41,15.4 45.5,18 45.5,24" fill="var(--c-warning)" />
+        {/* 右上角的亮紫切角 */}
+        <polygon points="41,15.4 45.5,18 45.5,24" fill="var(--c-lavender)" />
         {/* 三段上升的進度條：計畫 → 進行 → 完成 */}
         <rect x="16.5" y="31" width="5.5" height="9" fill="var(--c-primary)" stroke="var(--c-line)" strokeWidth="0.75" />
         <rect x="25.25" y="25" width="5.5" height="15" fill="var(--c-primary)" stroke="var(--c-line)" strokeWidth="0.75" />

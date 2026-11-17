@@ -171,10 +171,10 @@ function AppearanceSection() {
       <div className="mt-6 border-t border-dashed border-line-soft pt-5">
         <p className="label-caps mb-3 text-[11px] text-text-2">UI 系列</p>
         <Switch label="初號機配色" checked={eva} onChange={(e) => setSeries(e.target.checked ? 'eva' : 'default')} />
-        <p className="mt-2 text-sm text-text-2">紫色機體 × 螢光綠 × 警示橘，按鈕、分頁與標題改成警告標示風（直角色塊、特黑明體、斜紋）。深色、淺色都能搭配；關閉就回到原本的樣子。</p>
+        <p className="mt-2 text-sm text-text-2">深紫底 × 機體紫 × 螢光綠，按鈕、分頁與標題改成警告標示風（直角實心色塊、特黑明體、斜紋）。深色、淺色都能搭配；關閉就回到原本的樣子。</p>
         <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-4">
           <div className="flex items-center gap-2" aria-hidden>
-            {['#221a33', '#8f7fd6', '#a6e22e', '#ff9d3c'].map((c) => (
+            {['#1d1a2f', '#734f9a', '#965fd4', '#8bd450', '#3f6d4e'].map((c) => (
               <span key={c} className="size-6 rounded-full border border-line" style={{ background: c }} />
             ))}
           </div>

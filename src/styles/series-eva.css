@@ -1,54 +1,60 @@
 /* =====================================================================
    UI 系列：初號機配色（<html data-series="eva">）
-   - 紫色機體 × 螢光綠 × 警示橘；與 data-theme（深色／淺色）並存
-   - 只覆寫顏色 token、圓角、字體與裝飾，元件結構不變；關閉後完全回到原本的樣子
-   - 元件造型走「警告標示」風：直角色塊、特黑明體（Noto Serif TC 900）、斜紋端蓋
+   - 使用者指定的五色（2026/11/17）：
+       #1d1a2f 深紫黑（底色）  #734f9a 機體紫（色塊、斜紋）  #965fd4 亮紫（外框、強調）
+       #8bd450 螢光綠（主要操作）  #3f6d4e 暗綠（主要按鈕的錯位陰影、文字用綠）
+     其餘（卡片面、文字、淺色版）都是由這五色推導；紅、橘只保留給危險／警告狀態
+   - 與 data-theme（深色／淺色）並存；只覆寫 token、圓角、字體與裝飾，關閉後完全回到原本的樣子
+   - 元件造型走「警告標示」風：直角實心色塊、特黑明體（Noto Serif TC 900）、不透明斜紋
+   - 這個系列不使用半透明底色：*-soft 一律是不透明的實色
    - 對比已用 scripts/check-contrast.mjs 驗證（WCAG AA）
    ===================================================================== */
 
 :root[data-series='eva'] {
   color-scheme: dark;
 
-  --c-bg: #120e1a;
-  --c-surface: #221a33;
-  --c-surface-2: #2e2445;
-  --c-surface-3: #18122a;
+  --c-bg: #1d1a2f;
+  --c-surface: #29223f;
+  --c-surface-2: #352b50;
+  --c-surface-3: #161426;
 
-  --c-line: #9b88c8;
-  --c-line-soft: #4a3d6e;
-  --c-hatch: #5b4a86;
+  --c-line: #965fd4;
+  --c-line-soft: #54407a;
+  --c-hatch: #734f9a;
 
-  --c-text: #eeeaf7;
-  --c-text-2: #b9afd2;
-  --c-text-3: #7e7499;
+  --c-text: #f1eef8;
+  --c-text-2: #c0b6d8;
+  --c-text-3: #8b80a8;
 
-  --c-primary: #a6e22e;
-  --c-primary-ink: #a6e22e;
-  --c-on-primary: #121a04;
-  --c-primary-soft: rgb(166 226 46 / 0.12);
-  --c-btn-primary-border: #a6e22e;
-  --c-btn-primary-shadow: #6f9a1b;
+  --c-primary: #8bd450;
+  --c-primary-ink: #8bd450;
+  --c-on-primary: #1d1a2f;
+  --c-primary-soft: #2e443e;
+  --c-btn-primary-border: #8bd450;
+  --c-btn-primary-shadow: #3f6d4e;
 
-  --c-steel: #5fb7c9;
-  --c-steel-ink: #8fd3e0;
-  --c-lavender: #8f7fd6;
-  --c-lavender-ink: #b9aef0;
-  --c-mauve: #c478b8;
-  --c-mauve-ink: #e0a5d6;
+  --c-steel: #3f6d4e;
+  --c-steel-ink: #8fcca4;
+  --c-lavender: #965fd4;
+  --c-lavender-ink: #c3a4f0;
+  --c-mauve: #734f9a;
+  --c-mauve-ink: #b596dc;
 
   --c-danger: #ff7b6e;
-  --c-danger-soft: rgb(255 123 110 / 0.12);
+  --c-danger-soft: #4c3149;
   --c-warning: #ff9d3c;
-  --c-warning-soft: rgb(255 157 60 / 0.12);
+  --c-warning-soft: #4c3641;
+  --c-on-danger: #1d1a2f;
 
-  --c-focus: #a6e22e;
-  --c-backdrop: rgb(8 5 14 / 0.7);
+  --c-focus: #8bd450;
+  --c-backdrop: rgb(13 11 22 / 0.72);
 
-  /* 警示斜紋（頁首下緣） */
-  --eva-stripe-a: #ff9d3c;
-  --eva-stripe-b: #120e1a;
-
-  --c-on-danger: #1a0806;
+  /* 次要按鈕的機體紫色塊 */
+  --eva-plate: #734f9a;
+  --eva-plate-ink: #ffffff;
+  /* 頁首下緣斜紋 */
+  --eva-stripe-a: #8bd450;
+  --eva-stripe-b: #1d1a2f;
 
   /* 警告標示風：直角、特黑明體 */
   --r-xs: 0px;
@@ -63,44 +69,41 @@
 :root[data-series='eva'][data-theme='light'] {
   color-scheme: light;
 
-  --c-bg: #e4dff0;
-  --c-surface: #f1eef8;
-  --c-surface-2: #e3dcf1;
-  --c-surface-3: #d9d1ea;
+  --c-bg: #e6e1f2;
+  --c-surface: #f3f0fa;
+  --c-surface-2: #e4ddf2;
+  --c-surface-3: #dbd3ec;
 
-  --c-line: #2c1f4a;
-  --c-line-soft: #b4a9cf;
-  --c-hatch: #9d90bd;
+  --c-line: #1d1a2f;
+  --c-line-soft: #b7abd4;
+  --c-hatch: #965fd4;
 
-  --c-text: #1c1430;
-  --c-text-2: #4c4268;
+  --c-text: #1d1a2f;
+  --c-text-2: #4d4568;
   --c-text-3: #8a809f;
 
-  --c-primary: #a6e22e;
-  --c-primary-ink: #5a2ea6;
-  --c-on-primary: #121a04;
-  --c-primary-soft: rgb(90 46 166 / 0.1);
-  --c-btn-primary-border: #2c1f4a;
-  --c-btn-primary-shadow: #2c1f4a;
+  --c-primary: #8bd450;
+  --c-primary-ink: #3f6d4e;
+  --c-on-primary: #1d1a2f;
+  --c-primary-soft: #d7ebcc;
+  --c-btn-primary-border: #1d1a2f;
+  --c-btn-primary-shadow: #3f6d4e;
 
-  --c-steel: #5fb7c9;
-  --c-steel-ink: #1f6373;
-  --c-lavender: #8f7fd6;
-  --c-lavender-ink: #4b3f8f;
-  --c-mauve: #c478b8;
-  --c-mauve-ink: #7a3a6e;
+  --c-steel: #3f6d4e;
+  --c-steel-ink: #3f6d4e;
+  --c-lavender: #965fd4;
+  --c-lavender-ink: #6b3fb3;
+  --c-mauve: #734f9a;
+  --c-mauve-ink: #5b3d80;
 
   --c-danger: #b3261e;
-  --c-danger-soft: rgb(179 38 30 / 0.08);
+  --c-danger-soft: #f6dedd;
   --c-warning: #8a4b00;
-  --c-warning-soft: rgb(138 75 0 / 0.08);
-
-  --c-focus: #5a2ea6;
-  --c-backdrop: rgb(28 20 48 / 0.45);
-
-  --eva-stripe-a: #ff9d3c;
-  --eva-stripe-b: #2c1f4a;
+  --c-warning-soft: #f3e3cf;
   --c-on-danger: #ffffff;
+
+  --c-focus: #734f9a;
+  --c-backdrop: rgb(29 26 47 / 0.5);
 }
 
 /* 頁首下緣的警示斜紋、徽章：只有這個系列會顯示 */
@@ -127,6 +130,11 @@
     font-weight: 900;
     letter-spacing: 0.14em;
   }
+  /* 次要按鈕：不透明的機體紫色塊 */
+  :root[data-series='eva'] .btn-secondary {
+    background: var(--eva-plate);
+    color: var(--eva-plate-ink);
+  }
   :root[data-series='eva'] .btn-sm { font-size: 13px; letter-spacing: 0.1em; }
   :root[data-series='eva'] .btn-lg { font-size: 16px; }
   /* 主要操作（原本的 [ ] 括號）：兩端換成斜紋端蓋 */
@@ -138,9 +146,9 @@
   :root[data-series='eva'] .btn-bracket::after {
     content: '';
     align-self: stretch;
-    width: 16px;
+    width: 18px;
     opacity: 1;
-    background-image: repeating-linear-gradient(-45deg, currentColor 0 3px, transparent 3px 7px);
+    background-image: repeating-linear-gradient(-45deg, currentColor 0 4px, transparent 4px 8px);
   }
   :root[data-series='eva'] .btn-bracket.btn-sm { gap: 9px; }
   :root[data-series='eva'] .btn-bracket.btn-sm::before,
@@ -158,13 +166,20 @@
 
   /* ---------- Chip／徽章：標籤牌 ---------- */
   :root[data-series='eva'] .chip {
+    background: var(--c-surface-3);
     border-radius: 0;
     border-width: 1.5px;
     font-family: var(--ff-display);
     font-weight: 900;
     letter-spacing: 0.08em;
   }
+  :root[data-series='eva'] button.chip:hover { background: var(--c-surface-2); }
+  :root[data-series='eva'] .chip[aria-pressed='true'],
+  :root[data-series='eva'] .chip.selected {
+    background: var(--c-primary);
+  }
   :root[data-series='eva'] .badge {
+    background: var(--c-surface-3);
     height: 22px;
     padding: 0 8px 0 0;
     gap: 6px;
@@ -178,8 +193,8 @@
   :root[data-series='eva'] .badge::before {
     content: '';
     align-self: stretch;
-    width: 9px;
-    background-image: repeating-linear-gradient(-45deg, currentColor 0 2px, transparent 2px 5px);
+    width: 10px;
+    background-image: repeating-linear-gradient(-45deg, currentColor 0 3px, transparent 3px 6px);
   }
 
   /* ---------- 分頁籤：選取中的變成實心色塊 ---------- */
@@ -225,7 +240,7 @@
   :root[data-series='eva'] .elev-1::before,
   :root[data-series='eva'] .elev-2::before,
   :root[data-series='eva'] .elev-3::before {
-    background-image: repeating-linear-gradient(-45deg, var(--c-hatch) 0 3px, transparent 3px 7px);
+    background-image: repeating-linear-gradient(-45deg, var(--c-hatch) 0 4px, transparent 4px 8px);
   }
 
   /* 側邊欄時鐘：儀表板的螢光綠讀數（淺色時為深紫） */
@@ -238,11 +253,11 @@
 
 /* 頁面大標題：特黑明體，下方一段斜紋 */
 :root[data-series='eva'] .series-title {
-  padding-bottom: 18px;
+  padding-bottom: 20px;
   font-family: var(--ff-display);
   font-weight: 900;
   letter-spacing: 0.06em;
-  background: repeating-linear-gradient(-45deg, var(--c-primary) 0 7px, transparent 7px 14px) left bottom / min(100%, 240px) 10px no-repeat;
+  background: repeating-linear-gradient(-45deg, var(--c-primary) 0 8px, transparent 8px 16px) left bottom / min(100%, 240px) 12px no-repeat;
 }
 
 /* 提醒框：危險／警告上下各一條斜紋；一般提示只加粗外框 */
@@ -263,8 +278,14 @@
   position: absolute;
   left: 0;
   right: 0;
-  height: 7px;
-  background-image: repeating-linear-gradient(-45deg, currentColor 0 5px, transparent 5px 10px);
+  height: 8px;
+  background-image: repeating-linear-gradient(-45deg, currentColor 0 6px, transparent 6px 12px);
 }
 :root[data-series='eva'] .alert[data-tone]::before { top: 0; }
 :root[data-series='eva'] .alert[data-tone]::after { bottom: 0; }
+
+/* 頁首：不透明底色（原本是略透明＋模糊） */
+:root[data-series='eva'] .series-header {
+  background: var(--c-bg);
+  backdrop-filter: none;
+}

@@ -175,7 +175,7 @@ function AppShellInner({ children }: { children: ReactNode }) {
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 border-b border-line bg-bg/95 backdrop-blur-[2px]">
+        <header className="series-header sticky top-0 z-30 border-b border-line bg-bg/95 backdrop-blur-[2px]">
           <div className="flex h-14 items-center gap-3 px-4 sm:px-6 lg:h-auto lg:px-8">
             <Button
               variant="ghost"

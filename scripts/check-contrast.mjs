@@ -23,18 +23,20 @@ const themes = {
   },
   // 初號機配色（data-series="eva"）
   'eva-dark': {
-    bg: '#120E1A', surface: '#221A33', surface2: '#2E2445',
-    text: '#EEEAF7', text2: '#B9AFD2', line: '#9B88C8',
-    primary: '#A6E22E', onPrimary: '#121A04', primaryInk: '#A6E22E',
-    steelInk: '#8FD3E0', lavenderInk: '#B9AEF0', mauveInk: '#E0A5D6',
+    bg: '#1D1A2F', surface: '#29223F', surface2: '#352B50',
+    text: '#F1EEF8', text2: '#C0B6D8', line: '#965FD4',
+    primary: '#8BD450', onPrimary: '#1D1A2F', primaryInk: '#8BD450',
+    steelInk: '#8FCCA4', lavenderInk: '#C3A4F0', mauveInk: '#B596DC',
     danger: '#FF7B6E', warning: '#FF9D3C',
+    extra: [['plateInk / plate（次要按鈕）', '#FFFFFF', '#734F9A', 4.5], ['text / primarySoft', '#F1EEF8', '#2E443E', 4.5], ['primaryInk / primarySoft', '#8BD450', '#2E443E', 4.5], ['danger / dangerSoft', '#FF7B6E', '#4C3149', 4.5], ['warning / warningSoft', '#FF9D3C', '#4C3641', 4.5], ['onDanger / danger', '#1D1A2F', '#FF7B6E', 4.5]],
   },
   'eva-light': {
-    bg: '#E4DFF0', surface: '#F1EEF8', surface2: '#E3DCF1',
-    text: '#1C1430', text2: '#4C4268', line: '#2C1F4A',
-    primary: '#A6E22E', onPrimary: '#121A04', primaryInk: '#5A2EA6',
-    steelInk: '#1F6373', lavenderInk: '#4B3F8F', mauveInk: '#7A3A6E',
+    bg: '#E6E1F2', surface: '#F3F0FA', surface2: '#E4DDF2',
+    text: '#1D1A2F', text2: '#4D4568', line: '#1D1A2F',
+    primary: '#8BD450', onPrimary: '#1D1A2F', primaryInk: '#3F6D4E',
+    steelInk: '#3F6D4E', lavenderInk: '#6B3FB3', mauveInk: '#5B3D80',
     danger: '#B3261E', warning: '#8A4B00',
+    extra: [['plateInk / plate（次要按鈕）', '#FFFFFF', '#734F9A', 4.5], ['text / primarySoft', '#1D1A2F', '#D7EBCC', 4.5], ['primaryInk / primarySoft', '#3F6D4E', '#D7EBCC', 4.5], ['danger / dangerSoft', '#B3261E', '#F6DEDD', 4.5], ['warning / warningSoft', '#8A4B00', '#F3E3CF', 4.5], ['onDanger / danger', '#FFFFFF', '#B3261E', 4.5]],
   },
 }
 let fail = 0
@@ -51,6 +53,7 @@ for (const [name, t] of Object.entries(themes)) {
     ['danger / surface', t.danger, t.surface, 4.5],
     ['warning / surface', t.warning, t.surface, 4.5],
     ['line / surface (非文字 3:1)', t.line, t.surface, 3], ['line / bg (非文字 3:1)', t.line, t.bg, 3],
+    ...(t.extra ?? []),
   ]
   console.log(`\n[${name}]`)
   for (const [label, a, b, min] of checks) {

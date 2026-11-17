@@ -6,7 +6,7 @@ const SERIES_KEY = 'wls.series'
 /** 瀏覽器分頁／狀態列顏色（＝各主題的頁面底色）；index.html 的啟動腳本有一份相同的對照 */
 const THEME_COLOR: Record<UiSeries, Record<ThemeName, string>> = {
   default: { dark: '#1E2220', light: '#E3E8DE' },
-  eva: { dark: '#120E1A', light: '#E4DFF0' },
+  eva: { dark: '#1D1A2F', light: '#E6E1F2' },
 }
 
 /** 本機記住主題（避免開啟時閃爍）；雲端 app_settings.theme 為跨裝置來源 */
