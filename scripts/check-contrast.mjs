@@ -21,6 +21,21 @@ const themes = {
     steelInk: '#3B6670', lavenderInk: '#50567A', mauveInk: '#6D4B68',
     danger: '#B23A2E', warning: '#7F5B0A',
   },
+  // 初號機配色（data-series="eva"）
+  'eva-dark': {
+    bg: '#120E1A', surface: '#221A33', surface2: '#2E2445',
+    text: '#EEEAF7', text2: '#B9AFD2', line: '#9B88C8',
+    primary: '#A6E22E', onPrimary: '#121A04', primaryInk: '#A6E22E',
+    steelInk: '#8FD3E0', lavenderInk: '#B9AEF0', mauveInk: '#E0A5D6',
+    danger: '#FF7B6E', warning: '#FF9D3C',
+  },
+  'eva-light': {
+    bg: '#E4DFF0', surface: '#F1EEF8', surface2: '#E3DCF1',
+    text: '#1C1430', text2: '#4C4268', line: '#2C1F4A',
+    primary: '#A6E22E', onPrimary: '#121A04', primaryInk: '#5A2EA6',
+    steelInk: '#1F6373', lavenderInk: '#4B3F8F', mauveInk: '#7A3A6E',
+    danger: '#B3261E', warning: '#8A4B00',
+  },
 }
 let fail = 0
 for (const [name, t] of Object.entries(themes)) {

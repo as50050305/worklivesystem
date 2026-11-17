@@ -3,6 +3,7 @@
 @import '@fontsource-variable/noto-sans-tc';
 @import 'tailwindcss';
 @import './styles/tokens.css';
+@import './styles/series-eva.css';
 
 /* 讓 Tailwind 類別直接使用 token：bg-surface、text-text-2、border-line… */
 @theme inline {

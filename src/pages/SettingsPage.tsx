@@ -10,6 +10,7 @@ import { BackupSection } from '@/features/settings/BackupSection'
 import { ContractsSection } from '@/features/settings/ContractsSection'
 import { OptionsSection } from '@/features/settings/OptionsSection'
 import { TemplatesSection } from '@/features/settings/TemplatesSection'
+import { SeriesEmblem } from '@/components/SeriesEmblem'
 import { useTheme } from '@/lib/ThemeContext'
 import { useOnline } from '@/pwa/useOnline'
 
@@ -153,19 +154,33 @@ function ColorTagsSection() {
 }
 
 function AppearanceSection() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, series, setSeries } = useTheme()
+  const eva = series === 'eva'
   return (
     <Card title="外觀">
       <p className="mb-4 text-sm text-text-2">主題會同步到你所有的裝置。</p>
       <Tabs
         items={[
           { value: 'dark', label: '深色' },
-          { value: 'light', label: '淺色（米白紙感）' },
+          { value: 'light', label: eva ? '淺色（淡紫）' : '淺色（米白紙感）' },
         ]}
         value={theme}
         onChange={setTheme}
         className="max-w-sm"
       />
+      <div className="mt-6 border-t border-dashed border-line-soft pt-5">
+        <p className="label-caps mb-3 text-[11px] text-text-2">UI 系列</p>
+        <Switch label="初號機配色" checked={eva} onChange={(e) => setSeries(e.target.checked ? 'eva' : 'default')} />
+        <p className="mt-2 text-sm text-text-2">紫色機體 × 螢光綠 × 警示橘，按鈕與卡片改成稜角造型。深色、淺色都能搭配；關閉就回到原本的樣子。</p>
+        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <div className="flex items-center gap-2" aria-hidden>
+            {['#221a33', '#8f7fd6', '#a6e22e', '#ff9d3c'].map((c) => (
+              <span key={c} className="size-6 rounded-full border border-line" style={{ background: c }} />
+            ))}
+          </div>
+          <SeriesEmblem size={52} />
+        </div>
+      </div>
     </Card>
   )
 }

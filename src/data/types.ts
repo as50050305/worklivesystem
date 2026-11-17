@@ -1,6 +1,8 @@
 /** 資料表型別（P1 先定義已使用到的；後續階段逐步補齊） */
 
 export type ThemeName = 'dark' | 'light'
+/** UI 系列（配色風格），與深色／淺色並存；存在 app_settings.preferences.ui_series */
+export type UiSeries = 'default' | 'eva'
 
 export interface AppSettings {
   id: string

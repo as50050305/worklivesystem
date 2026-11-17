@@ -1,4 +1,5 @@
 import { CloudOff, PanelLeftClose, PanelLeftOpen, RefreshCw } from 'lucide-react'
+import { SeriesEmblem } from '@/components/SeriesEmblem'
 import type { ReactNode } from 'react'
 import { useAppState } from '@/app/AppStateProvider'
 import { Button } from '@/components/ui'
@@ -24,7 +25,7 @@ function Clock({ compact }: { compact?: boolean }) {
   }
   return (
     <div aria-live="off">
-      <p className="tabular font-mono text-[44px] font-medium leading-none tracking-tight">
+      <p className="series-readout tabular font-mono text-[44px] font-medium leading-none tracking-tight">
         {hh}:{mm}
         <span className="ml-1 text-xl text-text-3">{ss}</span>
       </p>
@@ -100,6 +101,7 @@ export function Sidebar({
 
       <footer className="border-t border-line-soft px-5 py-4">
         {footerExtra}
+        <SeriesEmblem className="mb-3" />
         <p className="tabular font-mono text-[11px] text-text-3">v{appVersion}</p>
       </footer>
     </div>

@@ -197,6 +197,7 @@ function AppShellInner({ children }: { children: ReactNode }) {
             </div>
           </div>
           <MutationErrorBar />
+          <div className="series-stripe" aria-hidden />
         </header>
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</main>
       </div>
@@ -220,7 +221,7 @@ export function PublicUpdateButton() {
 export function PublicFrame({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh">
-      <header className="flex h-14 items-center justify-between border-b border-line px-4 sm:px-6 lg:px-10">
+      <header className="relative flex h-14 items-center justify-between border-b border-line px-4 sm:px-6 lg:px-10">
         <NavLink to="/" className="font-mono text-sm font-semibold tracking-[0.14em]">
           規劃
         </NavLink>
@@ -229,6 +230,7 @@ export function PublicFrame({ children }: { children: ReactNode }) {
           <OfflinePill />
           <ThemeButton />
         </div>
+        <div className="series-stripe absolute inset-x-0 top-full" aria-hidden />
       </header>
       <main className="px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</main>
     </div>

@@ -16,9 +16,12 @@
       // 在 React 載入前套用主題，避免閃爍
       try {
         var t = localStorage.getItem('wls.theme')
-        if (t === 'light') {
-          document.documentElement.dataset.theme = 'light'
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#E3E8DE')
+        var eva = localStorage.getItem('wls.series') === 'eva'
+        if (t === 'light') document.documentElement.dataset.theme = 'light'
+        if (eva) document.documentElement.dataset.series = 'eva'
+        if (t === 'light' || eva) {
+          var c = eva ? (t === 'light' ? '#E4DFF0' : '#120E1A') : '#E3E8DE'
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', c)
         }
       } catch (e) {}
     </script>

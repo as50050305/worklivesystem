@@ -1,0 +1,130 @@
+/* =====================================================================
+   UI 系列：初號機配色（<html data-series="eva">）
+   - 紫色機體 × 螢光綠 × 警示橘；與 data-theme（深色／淺色）並存
+   - 只覆寫顏色 token、圓角與少量裝飾，元件結構不變；關閉後完全回到原本的樣子
+   - 對比已用 scripts/check-contrast.mjs 驗證（WCAG AA）
+   ===================================================================== */
+
+:root[data-series='eva'] {
+  color-scheme: dark;
+
+  --c-bg: #120e1a;
+  --c-surface: #221a33;
+  --c-surface-2: #2e2445;
+  --c-surface-3: #18122a;
+
+  --c-line: #9b88c8;
+  --c-line-soft: #4a3d6e;
+  --c-hatch: #5b4a86;
+
+  --c-text: #eeeaf7;
+  --c-text-2: #b9afd2;
+  --c-text-3: #7e7499;
+
+  --c-primary: #a6e22e;
+  --c-primary-ink: #a6e22e;
+  --c-on-primary: #121a04;
+  --c-primary-soft: rgb(166 226 46 / 0.12);
+  --c-btn-primary-border: #a6e22e;
+  --c-btn-primary-shadow: #6f9a1b;
+
+  --c-steel: #5fb7c9;
+  --c-steel-ink: #8fd3e0;
+  --c-lavender: #8f7fd6;
+  --c-lavender-ink: #b9aef0;
+  --c-mauve: #c478b8;
+  --c-mauve-ink: #e0a5d6;
+
+  --c-danger: #ff7b6e;
+  --c-danger-soft: rgb(255 123 110 / 0.12);
+  --c-warning: #ff9d3c;
+  --c-warning-soft: rgb(255 157 60 / 0.12);
+
+  --c-focus: #a6e22e;
+  --c-backdrop: rgb(8 5 14 / 0.7);
+
+  /* 警示斜紋（頁首下緣） */
+  --eva-stripe-a: #ff9d3c;
+  --eva-stripe-b: #120e1a;
+
+  /* 稜角感：圓角收小 */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 10px;
+  --r-2xl: 12px;
+}
+
+:root[data-series='eva'][data-theme='light'] {
+  color-scheme: light;
+
+  --c-bg: #e4dff0;
+  --c-surface: #f1eef8;
+  --c-surface-2: #e3dcf1;
+  --c-surface-3: #d9d1ea;
+
+  --c-line: #2c1f4a;
+  --c-line-soft: #b4a9cf;
+  --c-hatch: #9d90bd;
+
+  --c-text: #1c1430;
+  --c-text-2: #4c4268;
+  --c-text-3: #8a809f;
+
+  --c-primary: #a6e22e;
+  --c-primary-ink: #5a2ea6;
+  --c-on-primary: #121a04;
+  --c-primary-soft: rgb(90 46 166 / 0.1);
+  --c-btn-primary-border: #2c1f4a;
+  --c-btn-primary-shadow: #2c1f4a;
+
+  --c-steel: #5fb7c9;
+  --c-steel-ink: #1f6373;
+  --c-lavender: #8f7fd6;
+  --c-lavender-ink: #4b3f8f;
+  --c-mauve: #c478b8;
+  --c-mauve-ink: #7a3a6e;
+
+  --c-danger: #b3261e;
+  --c-danger-soft: rgb(179 38 30 / 0.08);
+  --c-warning: #8a4b00;
+  --c-warning-soft: rgb(138 75 0 / 0.08);
+
+  --c-focus: #5a2ea6;
+  --c-backdrop: rgb(28 20 48 / 0.45);
+
+  --eva-stripe-a: #ff9d3c;
+  --eva-stripe-b: #2c1f4a;
+}
+
+/* 頁首下緣的警示斜紋、徽章：只有這個系列會顯示 */
+.series-stripe,
+.series-emblem {
+  display: none;
+}
+:root[data-series='eva'] .series-emblem {
+  display: flex;
+}
+:root[data-series='eva'] .series-stripe {
+  display: block;
+  height: 4px;
+  background-image: repeating-linear-gradient(-45deg, var(--eva-stripe-a) 0 8px, var(--eva-stripe-b) 8px 16px);
+}
+
+@layer components {
+  /* 按鈕、Chip、徽章改成切角矩形 */
+  :root[data-series='eva'] .btn,
+  :root[data-series='eva'] .chip,
+  :root[data-series='eva'] .badge {
+    border-radius: var(--r-sm);
+  }
+  /* 側邊欄時鐘：儀表板的螢光綠讀數（淺色時為深紫） */
+  :root[data-series='eva'] .series-readout {
+    color: var(--c-primary-ink);
+  }
+  /* 頁面大標題前的色塊 */
+  :root[data-series='eva'] .series-title {
+    padding-left: 14px;
+    border-left: 6px solid var(--c-primary);
+  }
+}

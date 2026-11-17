@@ -7,7 +7,7 @@ export function PageHeader({ title, eyebrow, actions, children }: { title: React
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           {eyebrow && <p className="label-caps mb-2 text-text-2">{eyebrow}</p>}
-          <h1 className="text-4xl font-medium tracking-tight sm:text-5xl">{title}</h1>
+          <h1 className="series-title text-4xl font-medium tracking-tight sm:text-5xl">{title}</h1>
         </div>
         {actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
       </div>
