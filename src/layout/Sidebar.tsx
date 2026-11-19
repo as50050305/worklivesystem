@@ -87,7 +87,7 @@ export function Sidebar({
             </button>
           )}
           {!online && (
-            <div className="flex items-center gap-3 rounded-2xl border border-dashed border-warning px-4 py-3 text-warning">
+            <div data-alert="warning" className="flex items-center gap-3 rounded-2xl border border-dashed border-warning px-4 py-3 text-warning">
               <CloudOff size={18} strokeWidth={1.5} className="flex-none" />
               <span className="text-sm">離線中：可瀏覽，暫停編輯</span>
             </div>

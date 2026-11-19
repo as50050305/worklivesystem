@@ -23,7 +23,7 @@ export function Countdown({
         ) : (
           <>
             {cd.kind === 'past' && <span className="text-base">已過</span>}
-            <span className={size === 'lg' ? 'text-7xl tracking-tight' : 'text-5xl tracking-tight'}>{cd.days}</span>
+            <span className={cn(size === 'lg' ? 'text-7xl tracking-tight' : 'text-5xl tracking-tight', cd.kind !== 'past' && 'series-readout')}>{cd.days}</span>
             <span className="text-base">天</span>
           </>
         )}

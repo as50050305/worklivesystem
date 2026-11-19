@@ -34,6 +34,7 @@ export function ConfirmDialog({
     <dialog
       ref={ref}
       aria-labelledby={titleId}
+      data-alert={danger ? 'danger' : undefined}
       onCancel={(e) => {
         e.preventDefault()
         onCancel()

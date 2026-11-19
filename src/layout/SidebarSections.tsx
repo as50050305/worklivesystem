@@ -1,5 +1,5 @@
 import { Bell, ChevronDown, Plus } from 'lucide-react'
-import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge, EmptyState, Spinner } from '@/components/ui'
 import { LampIllustration } from '@/components/illustrations/Illustrations'
@@ -125,6 +125,18 @@ export function SidebarSections() {
   const scheduled = (collectionsQ.data ?? []).filter((c) => c.remind_next_year && c.remind_on !== null && c.remind_on > today)
   const upcoming = upcomingReminders(scheduled, today, 3)
 
+  // 需要注意的項目數（No show、逾期客戶、逾期生活代辦、到期的明年提醒）；「初號機配色」據此亮起頁首警示帶
+  const alertCount =
+    noShow.length +
+    dueClients.filter((c) => diffDays(c.next_followup_on!, today) > 0).length +
+    life.filter((it) => !it.is_done && diffDays(it.item_date, today) > 0).length +
+    reminders.length
+  useEffect(() => {
+    const root = document.documentElement
+    if (alertCount > 0) root.dataset.alerts = String(alertCount)
+    else delete root.dataset.alerts
+  }, [alertCount])
+
   const quickAdd = (title: string, tagId: string | null | undefined) =>
     create.mutateAsync({
       input: { title, item_date: today, item_time: null, color_tag_id: tagId ?? null, kind: 'normal', content: null, recurrence: 'none', recurrence_interval: null, recurrence_unit: null },
@@ -158,7 +170,7 @@ export function SidebarSections() {
                     {c.label} · {formatDate(c.date)}
                   </p>
                 </div>
-                <p className={cn('tabular flex-none font-mono font-medium', c.countdown.kind === 'today' ? 'text-lg text-primary-ink' : 'text-2xl')}>
+                <p className={cn('series-readout tabular flex-none font-mono font-medium', c.countdown.kind === 'today' ? 'text-lg text-primary-ink' : 'text-2xl')}>
                   {c.countdown.kind === 'today' ? '今天' : c.countdown.days}
                   {c.countdown.kind !== 'today' && <span className="ml-0.5 text-xs text-text-2">天</span>}
                 </p>
@@ -176,7 +188,7 @@ export function SidebarSections() {
         ) : (
           <ul className="space-y-1.5">
             {noShow.map((c) => (
-              <li key={`ns-${c.id}`} className="flex items-center gap-2 rounded-xl border border-dashed border-warning px-3 py-2">
+              <li key={`ns-${c.id}`} data-alert="warning" className="flex items-center gap-2 rounded-xl border border-dashed border-warning px-3 py-2">
                 <Link to={`/clients/${c.id}`} className="min-w-0 flex-1">
                   <span className="block truncate text-sm hover:underline">
                     <span className="tabular mr-1 font-mono text-[11px] text-text-2">{c.code}</span>
@@ -193,7 +205,7 @@ export function SidebarSections() {
               const late = diffDays(c.next_followup_on!, today)
               return (
                 <li key={`due-${c.id}`}>
-                  <Link to={`/clients/${c.id}`} className="flex items-center gap-2 rounded-xl border border-line-soft px-3 py-2 hover:bg-surface-2">
+                  <Link to={`/clients/${c.id}`} data-alert={late > 0 ? 'danger' : undefined} className="flex items-center gap-2 rounded-xl border border-line-soft px-3 py-2 hover:bg-surface-2">
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm">
                         <span className="tabular mr-1 font-mono text-[11px] text-text-2">{c.code}</span>
@@ -240,13 +252,14 @@ export function SidebarSections() {
                 {life.map((it) => {
                   const late = diffDays(it.item_date, today)
                   return (
-                    <ItemCard
-                      key={it.id}
-                      item={it}
-                      variant="row"
-                      checklist={checklists.get(it.id)}
-                      note={late > 0 ? <span className="font-semibold text-danger">逾期 {late} 天</span> : undefined}
-                    />
+                    <div key={it.id} data-alert={late > 0 && !it.is_done ? 'danger' : undefined} className="series-alert-row">
+                      <ItemCard
+                        item={it}
+                        variant="row"
+                        checklist={checklists.get(it.id)}
+                        note={late > 0 ? <span className="font-semibold text-danger">逾期 {late} 天</span> : undefined}
+                      />
+                    </div>
                   )
                 })}
               </div>
@@ -262,7 +275,7 @@ export function SidebarSections() {
         {reminders.length ? (
           <ul className="space-y-1.5">
             {reminders.map((c) => (
-              <li key={c.id} className="flex items-center gap-2 rounded-xl border border-line-soft px-3 py-2">
+              <li key={c.id} data-alert="warning" className="flex items-center gap-2 rounded-xl border border-line-soft px-3 py-2">
                 <Bell size={14} className="flex-none text-warning" aria-hidden />
                 <Link to={`/collections?edit=${c.id}`} className="min-w-0 flex-1">
                   <span className="block truncate text-sm hover:underline">{c.name}</span>

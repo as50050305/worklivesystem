@@ -171,7 +171,7 @@ function AppearanceSection() {
       <div className="mt-6 border-t border-dashed border-line-soft pt-5">
         <p className="label-caps mb-3 text-[11px] text-text-2">UI 系列</p>
         <Switch label="初號機配色" checked={eva} onChange={(e) => setSeries(e.target.checked ? 'eva' : 'default')} />
-        <p className="mt-2 text-sm text-text-2">深紫底 × 機體紫 × 螢光綠，按鈕、分頁與標題改成警告標示風（直角實心色塊、特黑明體、斜紋）。深色、淺色都能搭配；關閉就回到原本的樣子。</p>
+        <p className="mt-2 text-sm text-text-2">深色作戰螢幕：機體紫標示選取，螢光綠標示操作與讀數，頁面大標題是特黑明體的標示牌。只有逾期、No show、冷卻、離線和刪除確認會亮起警示斜紋。深色、淺色都能搭配；關閉就回到原本的樣子。</p>
         <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-4">
           <div className="flex items-center gap-2" aria-hidden>
             {['#1d1a2f', '#734f9a', '#965fd4', '#8bd450', '#3f6d4e'].map((c) => (

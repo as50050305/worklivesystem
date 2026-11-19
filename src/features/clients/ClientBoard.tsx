@@ -25,6 +25,7 @@ export function ClientCard({ client, overlay = false }: { client: Client; overla
       ref={drag.setNodeRef}
       {...(overlay ? {} : { ...drag.listeners, ...attrs })}
       aria-label={`${client.code} ${client.name}`}
+      data-alert={client.no_show_pending ? 'warning' : late !== null && late > 0 ? 'danger' : undefined}
       className={cn('rounded-2xl border border-line bg-surface p-3 text-sm', online && !overlay && 'cursor-grab touch-manipulation', drag.isDragging && 'opacity-30', overlay && 'elev-1 rotate-2')}
     >
       <div className="flex items-start justify-between gap-2">

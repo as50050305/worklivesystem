@@ -1,35 +1,45 @@
 /* =====================================================================
    UI 系列：初號機配色（<html data-series="eva">）
-   - 使用者指定的五色（2026/11/17）：
-       #1d1a2f 深紫黑（底色）  #734f9a 機體紫（色塊、斜紋）  #965fd4 亮紫（外框、強調）
-       #8bd450 螢光綠（主要操作）  #3f6d4e 暗綠（主要按鈕的錯位陰影、文字用綠）
-     其餘（卡片面、文字、淺色版）都是由這五色推導；紅、橘只保留給危險／警告狀態
-   - 與 data-theme（深色／淺色）並存；只覆寫 token、圓角、字體與裝飾，關閉後完全回到原本的樣子
-   - 元件造型走「警告標示」風：直角實心色塊、特黑明體（Noto Serif TC 900）、不透明斜紋
-   - 這個系列不使用半透明底色：*-soft 一律是不透明的實色
-   - 對比已用 scripts/check-contrast.mjs 驗證（WCAG AA）
+
+   方向（2026/11/18 unslop 修正）
+   - 產品：一個人用的工作＋生活規劃系統，管時間軸、專案、客戶與報價
+   - 性格：冷靜、精確、隨時待命
+   - 世界：深夜的作戰指揮室——深色螢幕、機體紫裝甲、螢光綠讀數、只在出事時亮起的警示帶
+   - 亮點：側欄時鐘與倒數做成螢光綠讀數；頁面大標題做成機體標示牌（特黑明體＋紫色裝甲邊＋編號）
+   - 招牌：橘黑／紅黑警示斜紋，只出現在真的需要注意的地方（[data-alert]、警告／危險提醒、刪除確認）
+
+   五色分工（使用者指定）
+     #1d1a2f 深紫黑  頁面底色；淺色版的文字
+     #965fd4 亮紫    選取（分頁底線）、focus、標示牌裝甲邊
+     #734f9a 機體紫  選取中的篩選標籤色塊
+     #8bd450 螢光綠  主要操作、開關 ON、讀數（時鐘、倒數、進度）
+     #3f6d4e 暗綠    主要按鈕的錯位陰影；淺色版的綠色文字
+   其餘面與文字是由深紫黑推導的低彩度灰紫；紅、橘只給警示
+
+   與 data-theme（深色／淺色）並存；只覆寫 token、字體、圓角與裝飾，元件結構不變，關閉後完全回到原樣
+   對比已用 scripts/check-contrast.mjs 驗證（WCAG AA）
    ===================================================================== */
 
 :root[data-series='eva'] {
   color-scheme: dark;
 
   --c-bg: #1d1a2f;
-  --c-surface: #29223f;
-  --c-surface-2: #352b50;
-  --c-surface-3: #161426;
+  --c-surface: #221f36;
+  --c-surface-2: #2c2843;
+  --c-surface-3: #17152a;
 
-  --c-line: #965fd4;
-  --c-line-soft: #54407a;
-  --c-hatch: #734f9a;
+  --c-line: #8a84a3;
+  --c-line-soft: #3a3552;
+  --c-hatch: #3a3552;
 
-  --c-text: #f1eef8;
-  --c-text-2: #c0b6d8;
-  --c-text-3: #8b80a8;
+  --c-text: #eeedf4;
+  --c-text-2: #aca7bf;
+  --c-text-3: #7f7a96;
 
   --c-primary: #8bd450;
   --c-primary-ink: #8bd450;
   --c-on-primary: #1d1a2f;
-  --c-primary-soft: #2e443e;
+  --c-primary-soft: #24332c;
   --c-btn-primary-border: #8bd450;
   --c-btn-primary-shadow: #3f6d4e;
 
@@ -40,52 +50,52 @@
   --c-mauve: #734f9a;
   --c-mauve-ink: #b596dc;
 
-  --c-danger: #ff7b6e;
-  --c-danger-soft: #4c3149;
+  --c-danger: #ff6b5e;
+  --c-danger-soft: #3a2232;
   --c-warning: #ff9d3c;
-  --c-warning-soft: #4c3641;
+  --c-warning-soft: #3a2a2a;
   --c-on-danger: #1d1a2f;
 
-  --c-focus: #8bd450;
+  --c-focus: #965fd4;
   --c-backdrop: rgb(13 11 22 / 0.72);
 
-  /* 次要按鈕的機體紫色塊 */
+  /* 選取：亮紫底線、機體紫色塊 */
+  --eva-select: #965fd4;
   --eva-plate: #734f9a;
   --eva-plate-ink: #ffffff;
-  /* 頁首下緣斜紋 */
-  --eva-stripe-a: #8bd450;
-  --eva-stripe-b: #1d1a2f;
+  /* 警示斜紋的暗色間隔 */
+  --eva-stripe-gap: #1d1a2f;
 
-  /* 警告標示風：直角、特黑明體 */
+  /* 直角、特黑明體（只用在頁面大標題） */
   --r-xs: 0px;
   --r-sm: 0px;
   --r-md: 0px;
   --r-lg: 2px;
   --r-xl: 2px;
-  --r-2xl: 3px;
+  --r-2xl: 2px;
   --ff-display: 'Noto Serif TC', 'Songti TC', 'Yu Mincho', 'PMingLiU', serif;
 }
 
 :root[data-series='eva'][data-theme='light'] {
   color-scheme: light;
 
-  --c-bg: #e6e1f2;
-  --c-surface: #f3f0fa;
-  --c-surface-2: #e4ddf2;
-  --c-surface-3: #dbd3ec;
+  --c-bg: #ebe9f1;
+  --c-surface: #f6f5fa;
+  --c-surface-2: #e4e1ec;
+  --c-surface-3: #dfdbe8;
 
-  --c-line: #1d1a2f;
-  --c-line-soft: #b7abd4;
-  --c-hatch: #965fd4;
+  --c-line: #4a4560;
+  --c-line-soft: #cfcadb;
+  --c-hatch: #cfcadb;
 
   --c-text: #1d1a2f;
-  --c-text-2: #4d4568;
-  --c-text-3: #8a809f;
+  --c-text-2: #4d4862;
+  --c-text-3: #7d7891;
 
   --c-primary: #8bd450;
   --c-primary-ink: #3f6d4e;
   --c-on-primary: #1d1a2f;
-  --c-primary-soft: #d7ebcc;
+  --c-primary-soft: #dcebd2;
   --c-btn-primary-border: #1d1a2f;
   --c-btn-primary-shadow: #3f6d4e;
 
@@ -104,146 +114,148 @@
 
   --c-focus: #734f9a;
   --c-backdrop: rgb(29 26 47 / 0.5);
+
+  --eva-select: #734f9a;
+  --eva-stripe-gap: #1d1a2f;
 }
 
-/* 頁首下緣的警示斜紋、徽章：只有這個系列會顯示 */
+/* ---------- 只屬於這個系列的元素（預設系列不顯示） ---------- */
 .series-stripe,
-.series-emblem {
+.series-emblem,
+.series-code {
   display: none;
 }
 :root[data-series='eva'] .series-emblem {
   display: flex;
 }
-:root[data-series='eva'] .series-stripe {
+:root[data-series='eva'] .series-code {
+  display: inline;
+}
+/* 頁首警示帶：只有側欄有逾期、No show 等待處理項目時才亮起 */
+:root[data-series='eva'][data-alerts] .series-stripe {
   display: block;
-  height: 4px;
-  background-image: repeating-linear-gradient(-45deg, var(--eva-stripe-a) 0 8px, var(--eva-stripe-b) 8px 16px);
+  height: 6px;
+  background-image: repeating-linear-gradient(-45deg, #ff9d3c 0 8px, var(--eva-stripe-gap) 8px 16px);
 }
 
 @layer components {
-  /* ---------- 按鈕：直角色塊＋特黑明體 ---------- */
+  /* ---------- 按鈕：直角實心色塊；字體回到介面字 ---------- */
   :root[data-series='eva'] .btn {
     border-radius: 0;
     border-width: 2px;
-    font-family: var(--ff-display);
-    font-size: 14px;
-    font-weight: 900;
-    letter-spacing: 0.14em;
   }
-  /* 次要按鈕：不透明的機體紫色塊 */
-  :root[data-series='eva'] .btn-secondary {
-    background: var(--eva-plate);
-    color: var(--eva-plate-ink);
-  }
-  :root[data-series='eva'] .btn-sm { font-size: 13px; letter-spacing: 0.1em; }
-  :root[data-series='eva'] .btn-lg { font-size: 16px; }
-  /* 主要操作（原本的 [ ] 括號）：兩端換成斜紋端蓋 */
-  :root[data-series='eva'] .btn-bracket {
-    padding: 0;
-    gap: 12px;
-  }
+  /* 原本的 [ ] 括號拿掉：主要操作靠實心螢光綠＋暗綠錯位陰影辨識 */
   :root[data-series='eva'] .btn-bracket::before,
   :root[data-series='eva'] .btn-bracket::after {
-    content: '';
-    align-self: stretch;
-    width: 18px;
-    opacity: 1;
-    background-image: repeating-linear-gradient(-45deg, currentColor 0 4px, transparent 4px 8px);
+    content: none;
   }
-  :root[data-series='eva'] .btn-bracket.btn-sm { gap: 9px; }
-  :root[data-series='eva'] .btn-bracket.btn-sm::before,
-  :root[data-series='eva'] .btn-bracket.btn-sm::after { width: 11px; }
-  /* 危險操作：實心紅色警示塊 */
-  :root[data-series='eva'] .btn-danger {
+  :root[data-series='eva'] .btn-secondary {
+    background: var(--c-surface-2);
+    border-color: var(--c-line);
+    --btn-shadow: var(--c-surface-3);
+  }
+  :root[data-series='eva'] .btn-secondary:hover:not(:disabled) {
+    border-color: var(--eva-select);
+  }
+  /* 刪除確認對話框裡的危險按鈕：實心紅；其他地方維持外框 */
+  :root[data-series='eva'] dialog .btn-danger:not(.btn-icon) {
     background: var(--c-danger);
     color: var(--c-on-danger);
   }
-  :root[data-series='eva'] .btn-danger:hover:not(:disabled) { background: var(--c-danger); }
-  :root[data-series='eva'] .btn-danger.btn-icon {
-    background: transparent;
-    color: var(--c-danger);
-  }
 
-  /* ---------- Chip／徽章：標籤牌 ---------- */
-  :root[data-series='eva'] .chip {
-    background: var(--c-surface-3);
-    border-radius: 0;
-    border-width: 1.5px;
-    font-family: var(--ff-display);
-    font-weight: 900;
-    letter-spacing: 0.08em;
-  }
-  :root[data-series='eva'] button.chip:hover { background: var(--c-surface-2); }
-  :root[data-series='eva'] .chip[aria-pressed='true'],
-  :root[data-series='eva'] .chip.selected {
-    background: var(--c-primary);
-  }
-  :root[data-series='eva'] .badge {
-    background: var(--c-surface-3);
-    height: 22px;
-    padding: 0 8px 0 0;
-    gap: 6px;
-    border-width: 1.5px;
-    border-radius: 0;
-    font-family: var(--ff-display);
-    font-size: 12px;
-    font-weight: 900;
-    letter-spacing: 0.1em;
-  }
-  :root[data-series='eva'] .badge::before {
-    content: '';
-    align-self: stretch;
-    width: 10px;
-    background-image: repeating-linear-gradient(-45deg, currentColor 0 3px, transparent 3px 6px);
-  }
-
-  /* ---------- 分頁籤：選取中的變成實心色塊 ---------- */
-  :root[data-series='eva'] .tabs {
-    gap: 4px;
-    border-bottom-width: 2px;
-  }
+  /* ---------- 分頁籤：選取＝亮紫底線 ---------- */
   :root[data-series='eva'] .tab {
-    padding: 9px 14px 10px;
-    font-family: var(--ff-display);
+    padding: 10px 12px 12px;
+    font-family: var(--ff-sans);
     font-size: 14px;
-    font-weight: 900;
-    letter-spacing: 0.16em;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+  :root[data-series='eva'] .tabs {
+    gap: 8px;
   }
   :root[data-series='eva'] .tab[aria-selected='true'],
   :root[data-series='eva'] .tab.active {
-    background: var(--c-primary);
-    color: var(--c-on-primary);
-    font-weight: 900;
+    color: var(--c-text);
+    font-weight: 600;
   }
   :root[data-series='eva'] .tab[aria-selected='true']::after,
   :root[data-series='eva'] .tab.active::after {
-    content: none;
+    left: 0;
+    right: 0;
+    background: var(--eva-select);
   }
 
-  /* ---------- 小標題、表頭 ---------- */
-  :root[data-series='eva'] .label-caps,
-  :root[data-series='eva'] .table th {
-    font-family: var(--ff-display);
-    font-weight: 900;
-    letter-spacing: 0.16em;
+  /* ---------- Chip：選取＝機體紫色塊 ---------- */
+  :root[data-series='eva'] .chip {
+    border-radius: 0;
   }
-  :root[data-series='eva'] .table th { font-size: 12px; }
+  :root[data-series='eva'] .chip[aria-pressed='true'],
+  :root[data-series='eva'] .chip.selected {
+    background: var(--eva-plate);
+    border-color: var(--eva-select);
+    color: var(--eva-plate-ink);
+  }
+
+  /* ---------- 徽章：安靜的直角標籤；只有警告／危險才帶斜紋 ---------- */
+  :root[data-series='eva'] .badge {
+    border-radius: 0;
+    font-family: var(--ff-sans);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  :root[data-series='eva'] .badge.text-warning,
+  :root[data-series='eva'] .badge.text-danger {
+    padding-left: 0;
+    gap: 6px;
+    background: var(--c-surface-3);
+  }
+  :root[data-series='eva'] .badge.text-warning::before,
+  :root[data-series='eva'] .badge.text-danger::before {
+    content: '';
+    align-self: stretch;
+    width: 8px;
+    background-image: repeating-linear-gradient(-45deg, currentColor 0 3px, transparent 3px 6px);
+  }
+
+  /* ---------- 小標題、表頭：介面字，不加特黑、不轉大寫 ---------- */
+  :root[data-series='eva'] .label-caps {
+    font-family: var(--ff-sans);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+  :root[data-series='eva'] .table th {
+    font-family: var(--ff-sans);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+
+  /* ---------- 卡片：外框退成髮絲線，裝甲感留給錯位層 ---------- */
+  :root[data-series='eva'] .card,
+  :root[data-series='eva'] .card-inset {
+    border-color: var(--c-line-soft);
+  }
+  :root[data-series='eva'] .elev-1::before,
+  :root[data-series='eva'] .elev-2::before,
+  :root[data-series='eva'] .elev-3::before {
+    background-color: var(--c-surface-3);
+    background-image: none;
+    border-color: var(--c-line-soft);
+  }
 
   /* ---------- 表單控制項 ---------- */
-  :root[data-series='eva'] .check { border-radius: 0; }
+  :root[data-series='eva'] .check,
   :root[data-series='eva'] .switch,
   :root[data-series='eva'] .switch::after {
     border-radius: 0;
   }
 
-  /* ---------- 錯位陰影層：斜紋加粗 ---------- */
-  :root[data-series='eva'] .elev-1::before,
-  :root[data-series='eva'] .elev-2::before,
-  :root[data-series='eva'] .elev-3::before {
-    background-image: repeating-linear-gradient(-45deg, var(--c-hatch) 0 4px, transparent 4px 8px);
-  }
-
-  /* 側邊欄時鐘：儀表板的螢光綠讀數（淺色時為深紫） */
+  /* ---------- 讀數：時鐘、倒數 ---------- */
   :root[data-series='eva'] .series-readout {
     color: var(--c-primary-ink);
   }
@@ -251,13 +263,55 @@
 
 /* 以下不放在 layer 內：要蓋過元件上的 Tailwind 工具類別（字重、內距） */
 
-/* 頁面大標題：特黑明體，下方一段斜紋 */
+/* ---------- 頁面大標題＝機體標示牌 ---------- */
+:root[data-series='eva'] .series-plate {
+  padding-left: 16px;
+  border-left: 4px solid var(--eva-select);
+}
+:root[data-series='eva'] .series-eyebrow {
+  font-family: var(--ff-mono);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-text-3);
+}
+:root[data-series='eva'] .series-code {
+  color: var(--eva-select);
+}
 :root[data-series='eva'] .series-title {
-  padding-bottom: 20px;
   font-family: var(--ff-display);
   font-weight: 900;
-  letter-spacing: 0.06em;
-  background: repeating-linear-gradient(-45deg, var(--c-primary) 0 8px, transparent 8px 16px) left bottom / min(100%, 240px) 12px no-repeat;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- 頁首：不透明、髮絲線 ---------- */
+:root[data-series='eva'] .series-header {
+  background: var(--c-bg);
+  backdrop-filter: none;
+  border-bottom-color: var(--c-line-soft);
+}
+
+/* ---------- 招牌：警示斜紋，只給需要注意的項目 ---------- */
+:root[data-series='eva'] [data-alert] {
+  padding-left: 20px;
+  background-image: repeating-linear-gradient(-45deg, var(--eva-alert) 0 4px, var(--eva-stripe-gap) 4px 8px);
+  background-size: 8px 100%;
+  background-repeat: no-repeat;
+  background-position: left top;
+}
+/* 側欄生活代辦的列在 -mx-2 容器裡：斜紋往內收，和上下的方框對齊 */
+:root[data-series='eva'] .series-alert-row[data-alert] {
+  margin-left: 8px;
+  padding-left: 8px;
+}
+:root[data-series='eva'] [data-alert='warning'] { --eva-alert: #ff9d3c; }
+:root[data-series='eva'] [data-alert='danger'] { --eva-alert: #ff6b5e; }
+/* 對話框：斜紋改在上緣 */
+:root[data-series='eva'] dialog[data-alert] {
+  padding-left: 24px;
+  padding-top: 40px;
+  background-color: var(--c-surface);
+  background-size: 100% 10px;
 }
 
 /* 提醒框：危險／警告上下各一條斜紋；一般提示只加粗外框 */
@@ -267,8 +321,8 @@
 :root[data-series='eva'] .alert[data-tone='danger'],
 :root[data-series='eva'] .alert[data-tone='warning'] {
   position: relative;
-  padding-top: 22px;
-  padding-bottom: 22px;
+  padding-top: 24px;
+  padding-bottom: 24px;
 }
 :root[data-series='eva'] .alert[data-tone='danger']::before,
 :root[data-series='eva'] .alert[data-tone='danger']::after,
@@ -283,9 +337,3 @@
 }
 :root[data-series='eva'] .alert[data-tone]::before { top: 0; }
 :root[data-series='eva'] .alert[data-tone]::after { bottom: 0; }
-
-/* 頁首：不透明底色（原本是略透明＋模糊） */
-:root[data-series='eva'] .series-header {
-  background: var(--c-bg);
-  backdrop-filter: none;
-}

@@ -74,7 +74,7 @@ function MutationErrorBar() {
   useEffect(() => onMutationError(setMsg), [])
   if (!msg) return null
   return (
-    <div role="alert" className="flex items-center gap-3 border-b border-danger bg-danger-soft px-4 py-2.5 text-sm text-danger sm:px-6 lg:px-10">
+    <div role="alert" data-alert="danger" className="flex items-center gap-3 border-b border-danger bg-danger-soft px-4 py-2.5 text-sm text-danger sm:px-6 lg:px-10">
       <OctagonAlert size={16} strokeWidth={1.75} className="flex-none" />
       <span className="flex-1">變更未儲存：{msg}</span>
       <button type="button" aria-label="關閉" onClick={() => setMsg(null)} className="grid size-7 place-items-center rounded-lg hover:bg-danger-soft">
